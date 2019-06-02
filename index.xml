@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>My New Hugo Site</title>
+    <link>https://tingw0w.github.io/</link>
+    <description>Recent content on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 02 Jun 2019 17:10:17 +0800</lastBuildDate>
+    
+	<atom:link href="https://tingw0w.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>https://tingw0w.github.io/about/</link>
+      <pubDate>Sun, 02 Jun 2019 17:10:17 +0800</pubDate>
+      
+      <guid>https://tingw0w.github.io/about/</guid>
+      <description>基于go语言的hugo 他说很简单，简单~
+ 安装hugo&amp;ndash;在github上&amp;ndash;release&amp;ndash;检查安装是否完成 用hugo生成一个博客 下载并设置主题&amp;ndash;可去官网下载主题 &amp;ndash; themes.gohugo.io &amp;ndash; 首先需要安装git，而且需要配置好 在本地启动个人博客&amp;ndash;用markdown写博客 部署到免费的github上的仓库&amp;ndash;将个人博客部署到远端服务器  这意思我还要去学习一下markdown的编写模式</description>
+    </item>
+    
+  </channel>
+</rss>
