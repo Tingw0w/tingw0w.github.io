@@ -12,14 +12,20 @@
     
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Windows下hugo搭建"/>
-<meta name="twitter:description" content="基于go语言的hugo Windows下的hugo搭建，穷困潦倒，还要玩游戏，先在Windows下搭建一下，以后有机会换系统。 他说很简单，简单~
+<meta name="twitter:description" content=" 基于go语言的hugo Windows下的hugo搭建，穷困潦倒，还要玩游戏，先在Windows下搭建一下，以后有机会换系统。 他说很简单，简单~
 安装hugo&ndash;在github上&ndash;release&ndash;检查安装是否完成 hugo官网下载合适的windows版本：https://github.com/gohugoio/hugo/releases
-我选的是64位的Windows版本。 插入图片 然后在Windows下配置环境变量。 系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。"/>
+我选的是64位的Windows版本。 插入图片 然后在Windows下配置环境变量。 系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。 用hugo生成一个博客 先用hugo生成一个静态网页，在本地查看，之后在传到github上的仓库上去。 找到一个你自己喜欢的文件夹生成一个blog文件夹（想叫什么名字就叫什么名字，无所谓的事情）
+创建一个hugo项目 下载并设置主题&ndash;可去官网下载主题 &ndash; themes.gohugo.io &ndash; 首先需要安装git，而且需要配置好 找到一个好看的主题，再设计网页。（themes.gohugo.io &ndash; 官网主题） 选了一个多姿多彩的主题，每个主题里面都有相对应的下载方式，就比如这个需要用git下载安装. 在git中下载安装好 添加一个静态网页.md格式的文件，在content文件夹下添加 在本地启动个人博客&ndash;用markdown写博客 在git中用vim格式添加markdown内容。 在本地配置服务器查看一下你的网页 。。。。这个网页不适合新手学习的，比如我，但是真的比我以前选的好看，我看看怎么搞，可以使用但是这个模板有太多我不想要的东西，我还是先用回我那个简单的模板。。。m10c 运行一下本地服务就很快的好了。。。 这样的一个网站 部署到免费的github上的仓库&ndash;将个人博客部署到远端服务器 在github上创一个仓库 首先要建一个仓库(github) &ndash; new repository 新仓库的名字必须这么命名，否则无法打开网站，这是github网站的命名规则username.github.io 建了一个空仓库 然后创建一个public文件等待上传到github仓库中 hugo &ndash;theme=m10c &ndash;baseUrl=&ldquo;https://仓库名/&rdquo; &ndash;buildDrafts 然后就是git命令将public文件推到远端的仓库中
+git init git add * git commit -m &quot;想写啥写啥&quot; git remote add origin &quot;......&quot;  &rdquo;&hellip;..&ldquo;图像中的url 之后就会有一个自己的网站 这篇文章主要学习自B站up主，Codesheep.
+ "/>
 
     <meta property="og:title" content="Windows下hugo搭建" />
-<meta property="og:description" content="基于go语言的hugo Windows下的hugo搭建，穷困潦倒，还要玩游戏，先在Windows下搭建一下，以后有机会换系统。 他说很简单，简单~
+<meta property="og:description" content=" 基于go语言的hugo Windows下的hugo搭建，穷困潦倒，还要玩游戏，先在Windows下搭建一下，以后有机会换系统。 他说很简单，简单~
 安装hugo&ndash;在github上&ndash;release&ndash;检查安装是否完成 hugo官网下载合适的windows版本：https://github.com/gohugoio/hugo/releases
-我选的是64位的Windows版本。 插入图片 然后在Windows下配置环境变量。 系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。" />
+我选的是64位的Windows版本。 插入图片 然后在Windows下配置环境变量。 系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。 用hugo生成一个博客 先用hugo生成一个静态网页，在本地查看，之后在传到github上的仓库上去。 找到一个你自己喜欢的文件夹生成一个blog文件夹（想叫什么名字就叫什么名字，无所谓的事情）
+创建一个hugo项目 下载并设置主题&ndash;可去官网下载主题 &ndash; themes.gohugo.io &ndash; 首先需要安装git，而且需要配置好 找到一个好看的主题，再设计网页。（themes.gohugo.io &ndash; 官网主题） 选了一个多姿多彩的主题，每个主题里面都有相对应的下载方式，就比如这个需要用git下载安装. 在git中下载安装好 添加一个静态网页.md格式的文件，在content文件夹下添加 在本地启动个人博客&ndash;用markdown写博客 在git中用vim格式添加markdown内容。 在本地配置服务器查看一下你的网页 。。。。这个网页不适合新手学习的，比如我，但是真的比我以前选的好看，我看看怎么搞，可以使用但是这个模板有太多我不想要的东西，我还是先用回我那个简单的模板。。。m10c 运行一下本地服务就很快的好了。。。 这样的一个网站 部署到免费的github上的仓库&ndash;将个人博客部署到远端服务器 在github上创一个仓库 首先要建一个仓库(github) &ndash; new repository 新仓库的名字必须这么命名，否则无法打开网站，这是github网站的命名规则username.github.io 建了一个空仓库 然后创建一个public文件等待上传到github仓库中 hugo &ndash;theme=m10c &ndash;baseUrl=&ldquo;https://仓库名/&rdquo; &ndash;buildDrafts 然后就是git命令将public文件推到远端的仓库中
+git init git add * git commit -m &quot;想写啥写啥&quot; git remote add origin &quot;......&quot;  &rdquo;&hellip;..&ldquo;图像中的url 之后就会有一个自己的网站 这篇文章主要学习自B站up主，Codesheep.
+ " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://Tingw0w.github.io/windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/" />
 <meta property="article:published_time" content="2019-06-03T12:36:34&#43;08:00"/>
@@ -81,11 +87,81 @@
 
 <p>我选的是64位的Windows版本。
 插入图片
-<img src="D:/hugo/bin/Tingw0wblog/resources/_gen/images/windows.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/windows.png" alt="" />
 然后在Windows下配置环境变量。
-<img src="D:/hugo/bin/Tingw0wblog/resources/_gen/images/peizhi01.png" alt="" /></p>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi01.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi02.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi03.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi04.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi05.png" alt="" />
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/peizhi06.png" alt="" /></p>
 
-<p>系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。</p>
+<p>系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/hugo%20version.png" alt="" /></p>
+
+<h2 id="用hugo生成一个博客">用hugo生成一个博客</h2>
+
+<p>先用hugo生成一个静态网页，在本地查看，之后在传到github上的仓库上去。
+找到一个你自己喜欢的文件夹生成一个blog文件夹（想叫什么名字就叫什么名字，无所谓的事情）</p>
+
+<p><img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/blog%E6%96%87%E4%BB%B6%E5%A4%B9.png" alt="" /></p>
+
+<p>创建一个hugo项目
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/newhugosite.png" alt="" /></p>
+
+<h2 id="下载并设置主题-可去官网下载主题-themes-gohugo-io-首先需要安装git-而且需要配置好">下载并设置主题&ndash;可去官网下载主题 &ndash; themes.gohugo.io &ndash; 首先需要安装git，而且需要配置好</h2>
+
+<p>找到一个好看的主题，再设计网页。（themes.gohugo.io &ndash; 官网主题）
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/hugotheme.png" alt="" /></p>
+
+<p>选了一个多姿多彩的主题，每个主题里面都有相对应的下载方式，就比如这个需要用git下载安装.
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/themeinstall.png" alt="" />
+在git中下载安装好
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/gitdownloadtheme.png" alt="" />
+添加一个静态网页.md格式的文件，在content文件夹下添加
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/hugonewmarkdown.png" alt="" /></p>
+
+<h2 id="在本地启动个人博客-用markdown写博客">在本地启动个人博客&ndash;用markdown写博客</h2>
+
+<p>在git中用vim格式添加markdown内容。
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/vimadd.png" alt="" />
+在本地配置服务器查看一下你的网页
+。。。。这个网页不适合新手学习的，比如我，但是真的比我以前选的好看，我看看怎么搞，可以使用但是这个模板有太多我不想要的东西，我还是先用回我那个简单的模板。。。m10c
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/m10ctheme.png" alt="" />
+运行一下本地服务就很快的好了。。。
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/localserver.png" alt="" />
+这样的一个网站
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/localpage.png" alt="" /></p>
+
+<h2 id="部署到免费的github上的仓库-将个人博客部署到远端服务器">部署到免费的github上的仓库&ndash;将个人博客部署到远端服务器</h2>
+
+<p>在github上创一个仓库
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/githubrepository.png" alt="" /></p>
+
+<h2 id="首先要建一个仓库-github-new-repository">首先要建一个仓库(github) &ndash; new repository</h2>
+
+<p>新仓库的名字必须这么命名，否则无法打开网站，这是github网站的命名规则username.github.io
+建了一个空仓库
+然后创建一个public文件等待上传到github仓库中
+hugo &ndash;theme=m10c &ndash;baseUrl=&ldquo;https://仓库名/&rdquo; &ndash;buildDrafts
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/public.png" alt="" />
+然后就是git命令将public文件推到远端的仓库中</p>
+
+<pre><code>git init
+git add *
+git commit -m &quot;想写啥写啥&quot;
+git remote add origin &quot;......&quot;
+</code></pre>
+
+<p>&rdquo;&hellip;..&ldquo;图像中的url
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/url.png" alt="" /></p>
+
+<p>之后就会有一个自己的网站
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/firstblog.png" alt="" /></p>
+
+<p>这篇文章主要学习自B站up主，Codesheep.</p>
+
+<iframe src="//player.bilibili.com/player.html?aid=51574688&cid=90274682&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
     </div>
     <div class="post-footer">
