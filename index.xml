@@ -66,7 +66,7 @@ CGI C++编写 我们需要一个 Web 服务器 &amp;ndash; 专门处理 HTTP 请
  
 首先要建一个仓库(github) &amp;ndash; new repository 新仓库的名字必须这么命名，否则无法打开网站，这是github网站的命名规则username.github.io 建了一个空仓库
 然后创建一个public文件等待上传到github仓库中
-hugo &amp;ndash;theme=m10c &amp;ndash;baseUrl=&amp;ldquo;https://仓库名/&amp;rdquo; &amp;ndash;buildDrafts</description>
+hugo &amp;ndash;theme=m10c &amp;ndash;baseUrl=&amp;ldquo;https://tingw0w.</description>
     </item>
     
   </channel>
