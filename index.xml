@@ -2,72 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tingw0w</title>
-    <link>https://tingw0w.github.io/</link>
+    <link>uildDrafts/</link>
     <description>Recent content on Tingw0w</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 28 Jun 2019 16:37:56 +0800</lastBuildDate>
     
-	<atom:link href="https://tingw0w.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="uildDrafts/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>CGI C&#43;&#43;</title>
-      <link>https://tingw0w.github.io/content/cgi-c&#43;&#43;/</link>
-      <pubDate>Fri, 28 Jun 2019 16:37:56 +0800</pubDate>
-      
-      <guid>https://tingw0w.github.io/content/cgi-c&#43;&#43;/</guid>
-      <description>CGI CGI (Common Gateway Interface, 通用网关接口)
-这篇文章从《后台开发 核心技术与应用实践中》学得，如有侵权请联系我删除。[联系方式 QQ]: 573836705
-目前我的能力也只能够了解CGI是什么了，再多的内容，由于我的知识面还是太窄，看到复杂的内容头晕。
-CGI是什么？ CGI是一个协议，协议就是人类写出来然后用来方便网络通信的。最早的web服务器简单的响应浏览器发来的HTTP请求，并将存储在服务器上的HTTP文件返回给用户浏览器&amp;ndash;这也就是静态HTML.
-随着时间的发展，出现了动态技术，web服务器所处理的内容都是静态的，要想处理动态内容就需要依赖web动态程序 (php、jsp、python、perl)。想要处理这样的程序，就出现了CGI协议。
-组成 CGI 通信系统的两部分  HTML 页面 &amp;ndash; 用户端浏览器上的页面 CGI 程序 &amp;ndash; 服务器  客户端 &amp;ndash; 服务器 之间的通信 == 客户端的浏览器 &amp;ndash; 服务器端的 web 服务器 之间的 HTTP 通信 所以只要知道浏览器请求执行服务器上哪个 CGI 程序就可以。
-服务器和 CGI 程序之间是通过标准输入输出来进行数据传递的，而这个过程需要环境变量 的协作方可实现。
-每个 CGI 程序只能处理一个用户请求，在激活一个 CGI 程序进程时也创建了属于该进程的环境变量。
-CGI C++编写 我们需要一个 Web 服务器 &amp;ndash; 专门处理 HTTP 请求的服务器。
-常用的 Web 服务器有 Apache (接下来下载的) 和 Nginx (需要着重学习的 web 服务器) 啊，学校实验室的电脑坏了，啊，成功的面前满是崎岖的磨难。</description>
-    </item>
-    
-    <item>
-      <title>Windows下hugo搭建</title>
-      <link>https://tingw0w.github.io/windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/</link>
-      <pubDate>Mon, 03 Jun 2019 12:36:34 +0800</pubDate>
-      
-      <guid>https://tingw0w.github.io/windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/</guid>
-      <description>基于go语言的hugo Windows下的hugo搭建，穷困潦倒，还要玩游戏，先在Windows下搭建一下，以后有机会换系统。 他说很简单，简单~
-安装hugo&amp;ndash;在github上&amp;ndash;release&amp;ndash;检查安装是否完成 hugo官网下载合适的windows版本：https://github.com/gohugoio/hugo/releases
-我选的是64位的Windows版本。 插入图片
- 
-然后在Windows下配置环境变量。
- 
-系统变量配置完毕之后可以在cmd命令行窗口查看是否装好。
- 
-用hugo生成一个博客 先用hugo生成一个静态网页，在本地查看，之后在传到github上的仓库上去。 找到一个你自己喜欢的文件夹生成一个blog文件夹（想叫什么名字就叫什么名字，无所谓的事情）
- 
-创建一个hugo项目
- 
-下载并设置主题&amp;ndash;可去官网下载主题 &amp;ndash; themes.gohugo.io &amp;ndash; 首先需要安装git，而且需要配置好 找到一个好看的主题，再设计网页。（themes.gohugo.io &amp;ndash; 官网主题）
- 
-选了一个多姿多彩的主题，每个主题里面都有相对应的下载方式，就比如这个需要用git下载安装.
- 
-在git中下载安装好
- 
-添加一个静态网页.md格式的文件，在content文件夹下添加
- 
-在本地启动个人博客&amp;ndash;用markdown写博客 在git中用vim格式添加markdown内容。
- 
-在本地配置服务器查看一下你的网页 。。。。这个网页不适合新手学习的，比如我，但是真的比我以前选的好看，我看看怎么搞，可以使用但是这个模板有太多我不想要的东西，我还是先用回我那个简单的模板。。。m10c
- 
-运行一下本地服务就很快的好了。。。
- 
-这样的一个网站
- 
-部署到免费的github上的仓库&amp;ndash;将个人博客部署到远端服务器 在github上创一个仓库
- 
-首先要建一个仓库(github) &amp;ndash; new repository 新仓库的名字必须这么命名，否则无法打开网站，这是github网站的命名规则username.github.io 建了一个空仓库
-然后创建一个public文件等待上传到github仓库中
-hugo &amp;ndash;theme=m10c &amp;ndash;baseUrl=&amp;ldquo;https://tingw0w.</description>
-    </item>
     
   </channel>
 </rss>

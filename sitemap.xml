@@ -3,34 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://tingw0w.github.io/content/cgi-c&#43;&#43;/</loc>
-    <lastmod>2019-06-28T16:37:56+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://tingw0w.github.io/content/</loc>
-    <lastmod>2019-06-28T16:37:56+08:00</lastmod>
+    <loc>uildDrafts/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://tingw0w.github.io/</loc>
-    <lastmod>2019-06-28T16:37:56+08:00</lastmod>
+    <loc>uildDrafts/tags/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://tingw0w.github.io/windows%E4%B8%8Bhugo%E6%90%AD%E5%BB%BA/</loc>
-    <lastmod>2019-06-03T12:36:34+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://tingw0w.github.io/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://tingw0w.github.io/tags/</loc>
+    <loc>uildDrafts/</loc>
     <priority>0</priority>
   </url>
   
