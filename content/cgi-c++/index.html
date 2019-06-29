@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>CGI C&#43;&#43; // Tingw0w</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tingw0w" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://tingw0w.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CGI C&#43;&#43;"/>
+<meta name="twitter:description" content="CGI CGI (Common Gateway Interface, 通用网关接口)
+这篇文章从《后台开发 核心技术与应用实践中》学得，如有侵权请联系我删除。[联系方式 QQ]: 573836705
+目前我的能力也只能够了解CGI是什么了，再多的内容，由于我的知识面还是太窄，看到复杂的内容头晕。
+CGI是什么？ CGI是一个协议，协议就是人类写出来然后用来方便网络通信的。最早的web服务器简单的响应浏览器发来的HTTP请求，并将存储在服务器上的HTTP文件返回给用户浏览器&ndash;这也就是静态HTML.
+随着时间的发展，出现了动态技术，web服务器所处理的内容都是静态的，要想处理动态内容就需要依赖web动态程序 (php、jsp、python、perl)。想要处理这样的程序，就出现了CGI协议。
+组成 CGI 通信系统的两部分  HTML 页面 &ndash; 用户端浏览器上的页面 CGI 程序 &ndash; 服务器  客户端 &ndash; 服务器 之间的通信 == 客户端的浏览器 &ndash; 服务器端的 web 服务器 之间的 HTTP 通信 所以只要知道浏览器请求执行服务器上哪个 CGI 程序就可以。
+服务器和 CGI 程序之间是通过标准输入输出来进行数据传递的，而这个过程需要环境变量 的协作方可实现。
+每个 CGI 程序只能处理一个用户请求，在激活一个 CGI 程序进程时也创建了属于该进程的环境变量。
+CGI C&#43;&#43;编写 我们需要一个 Web 服务器 &ndash; 专门处理 HTTP 请求的服务器。
+常用的 Web 服务器有 Apache (接下来下载的) 和 Nginx (需要着重学习的 web 服务器) 啊，学校实验室的电脑坏了，啊，成功的面前满是崎岖的磨难。"/>
+
+    <meta property="og:title" content="CGI C&#43;&#43;" />
+<meta property="og:description" content="CGI CGI (Common Gateway Interface, 通用网关接口)
+这篇文章从《后台开发 核心技术与应用实践中》学得，如有侵权请联系我删除。[联系方式 QQ]: 573836705
+目前我的能力也只能够了解CGI是什么了，再多的内容，由于我的知识面还是太窄，看到复杂的内容头晕。
+CGI是什么？ CGI是一个协议，协议就是人类写出来然后用来方便网络通信的。最早的web服务器简单的响应浏览器发来的HTTP请求，并将存储在服务器上的HTTP文件返回给用户浏览器&ndash;这也就是静态HTML.
+随着时间的发展，出现了动态技术，web服务器所处理的内容都是静态的，要想处理动态内容就需要依赖web动态程序 (php、jsp、python、perl)。想要处理这样的程序，就出现了CGI协议。
+组成 CGI 通信系统的两部分  HTML 页面 &ndash; 用户端浏览器上的页面 CGI 程序 &ndash; 服务器  客户端 &ndash; 服务器 之间的通信 == 客户端的浏览器 &ndash; 服务器端的 web 服务器 之间的 HTTP 通信 所以只要知道浏览器请求执行服务器上哪个 CGI 程序就可以。
+服务器和 CGI 程序之间是通过标准输入输出来进行数据传递的，而这个过程需要环境变量 的协作方可实现。
+每个 CGI 程序只能处理一个用户请求，在激活一个 CGI 程序进程时也创建了属于该进程的环境变量。
+CGI C&#43;&#43;编写 我们需要一个 Web 服务器 &ndash; 专门处理 HTTP 请求的服务器。
+常用的 Web 服务器有 Apache (接下来下载的) 和 Nginx (需要着重学习的 web 服务器) 啊，学校实验室的电脑坏了，啊，成功的面前满是崎岖的磨难。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tingw0w.github.io/content/cgi-c&#43;&#43;/" />
+<meta property="article:published_time" content="2019-06-28T16:37:56&#43;08:00"/>
+<meta property="article:modified_time" content="2019-06-28T16:37:56&#43;08:00"/>
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://tingw0w.github.io"><img class="app-header-avatar" src="/avatar.jpg" alt="Tingw0w" /></a>
+      <h1>Tingw0w</h1>
+      <p> </p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/gohugoio"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/gohugoio"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">CGI C&#43;&#43;</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 28, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<h1 id="cgi">CGI</h1>
+
+<p>CGI (Common Gateway Interface, 通用网关接口)</p>
+
+<p>这篇文章从《后台开发 核心技术与应用实践中》学得，如有侵权请联系我删除。[联系方式 QQ]: 573836705</p>
+
+<p>目前我的能力也只能够了解CGI是什么了，再多的内容，由于我的知识面还是太窄，看到复杂的内容头晕。</p>
+
+<h2 id="cgi是什么">CGI是什么？</h2>
+
+<p>CGI是一个协议，协议就是人类写出来然后用来方便网络通信的。最早的web服务器简单的响应浏览器发来的HTTP请求，并将存储在服务器上的HTTP文件返回给用户浏览器&ndash;这也就是静态HTML.</p>
+
+<p>随着时间的发展，出现了动态技术，web服务器所处理的内容都是静态的，要想处理动态内容就需要依赖web动态程序 (php、jsp、python、perl)。想要处理这样的程序，就出现了CGI协议。</p>
+
+<h3 id="组成-cgi-通信系统的两部分">组成 CGI 通信系统的两部分</h3>
+
+<ol>
+<li>HTML 页面 &ndash; 用户端浏览器上的页面</li>
+<li>CGI 程序 &ndash; 服务器</li>
+</ol>
+
+<p>客户端 &ndash; 服务器 之间的通信 == 客户端的浏览器 &ndash; 服务器端的 web 服务器 之间的 HTTP 通信
+所以只要知道浏览器请求执行服务器上哪个 CGI 程序就可以。</p>
+
+<p>服务器和 CGI 程序之间是通过标准输入输出来进行数据传递的，而这个过程需要<font color="#dd0000"> 环境变量 </font>的协作方可实现。</p>
+
+<p>每个 CGI 程序只能处理一个用户请求，在激活一个 CGI 程序进程时也创建了属于该进程的环境变量。</p>
+
+<h3 id="cgi-c-编写">CGI C++编写</h3>
+
+<hr />
+
+<p>我们需要一个 Web 服务器 &ndash; 专门处理 HTTP 请求的服务器。</p>
+
+<p>常用的 Web 服务器有 Apache (接下来下载的) 和 Nginx (需要着重学习的 web 服务器)
+啊，学校实验室的电脑坏了，啊，成功的面前满是崎岖的磨难。</p>
+
+<h4 id="apache-的安装">Apache 的安装</h4>
+
+<ol>
+<li>下载 Apache
+还是需要首先下载lynx
+lynx命令是纯文本模式的网页浏览器。</li>
+<li>解压 <br/>
+<a href="https://www.cnblogs.com/lhm166/articles/6604852.html">Linux下tar压缩解压缩命令详解</a><br/>
+tar -xvf &ndash; 解压时显示所有过程，-f 使用档案名字。</li>
+
+<li><p>安装 <br/>
+安装时候出现的问题<br/><br/>
+说明需要安装APR，这个东西需要一定的技术才能下载到. <a href="https://blog.chaos.run/dreams/ubuntu-ssr-server/">Ubuntu（Debian）上部署SSR服务端</a>.<br/>
+可以用./configure -help | grep apr 查看帮助。<br/>
+<a href="https://apr.apache.org/download.cgi">下载 apr 的网址</a>
+解压压缩包<br/><br/>
+又出现问题<br/>
+下载apr-util
+相同的解压方式，就不再重复贴图了<br/></p>
+
+<pre><code>gzip -d apr-util-1.6.1.tar.gz
+tar -xvf apr-util-1.6.1.tar
+cd apr-util-1.6.1
+./configure --with-apr=/usr/local/apr
+sudo make
+sudo make install
+</code></pre>
+
+<p><a href="https://ftp.pcre.org/pub/pcre/">下载 pcre 的网址</a><br/>
+安装 pcre</p>
+
+<pre><code>gzip -d pcre-8.43.tar.gz
+tar -xvf pcre-8.43.tar
+cd pcre-8.43
+./configure
+sudo make
+sudo make install
+</code></pre>
+
+<p>安装 Apache</p>
+
+<pre><code>./configure --prefix=/home/tingw0w/sofeware/apache-2.4.39/apache-install
+sudo make 
+sudo make install 
+</code></pre></li>
+
+<li><p>将端口改为 8083 &ndash; 两张图别忘了贴了</p></li>
+
+<li><p>启动 Apache</p>
+
+<pre><code>sudo /home/tingw0w/sofeware/apache-2.4.39/apache-install/bin/apachectl -k start
+</code></pre>
+
+<p>启动的时候出错</p>
+
+<p>终于成功了
+成功启动 网址 <a href="http://localhost:8083">http://localhost:8083</a></p></li>
+</ol>
+
+<h4 id="编写-cgi-程序-c">编写 CGI 程序  &ndash; C++</h4>
+
+<p>编写 .cpp 文档</p>
+
+<pre><code>#include &lt;iostream&gt;
+using namespace std;
+ 
+int main ()
+{
+    
+   cout &lt;&lt; &quot;Content-type:text/html\r\n\r\n&quot;;
+   cout &lt;&lt; &quot;&lt;html&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;head&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;title&gt;Hello World - First CGI Program&lt;/title&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;/head&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;body&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;h2&gt;Hello World! This is my first CGI program&lt;/h2&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;/body&gt;\n&quot;;
+   cout &lt;&lt; &quot;&lt;/html&gt;\n&quot;;
+   
+   return 0;
+}
+</code></pre>
+
+<pre><code>g++ -o test test.cpp
+./test
+</code></pre>
+
+<p>先执行一下查看是否存在错误.</p>
+
+<p>之后将 test (这个可执行文件) 复制到 Apache 的 cgi-bin 目录下.</p>
+
+<p>复制命令</p>
+
+<pre><code>sudo cp test /home/tingw0w/sofeware/apache-2.4.39/apache-install/cgi-bin
+</code></pre>
+
+<p>复制了之后发现一直出现错误，就是无法执行 cgi 文件，我看的垃圾书没有教配置 Apache 的环境运行 cgi 脚本，下面贴出错误<a href="https://www.jianshu.com/p/9a3122862b64">解决方法</a>。</p>
+
+<h4 id="修改这几个地方">修改这几个地方</h4>
+
+<ol>
+<li><p>去注释 &lsquo;#&rsquo;</p>
+
+<pre><code>#LoadModule cgid_module modules/mod_cgid.so
+</code></pre>
+
+<p>末尾加上 .py 可执行 Python 文件</p>
+
+<pre><code>#AddHandler cgi-script .cgi
+AddHandler cgi-script .cgi .py
+</code></pre></li>
+
+<li><p>设置路径访问权限</p>
+
+<pre><code>&lt;Directory /&gt;
+AllowOverride none
+Require all denied
+&lt;/Directory&gt;``
+</code></pre></li>
+
+<li><p>设置映射路径(&ldquo;/usr/local/htdocs/cgi-bin/&ldquo;为真实路径)<br/>
+注意这里 路径末尾一定要加/ ，否则apache是无法打到该路径下的文件的。
+ScriptAlias /cgi-bin/ &ldquo;/usr/local/htdocs/cgi-bin/&rdquo;</p></li>
+</ol>
+
+<h4 id="修改之后的样子">修改之后的样子</h4>
+
+<pre><code>&lt;Directory &quot;/usr/local/htdocs/cgi-bin/&quot;&gt;
+AllowOverride None
+Options +ExecCGI
+Order allow,deny
+Allow from all
+&lt;/Directory&gt;```
+</code></pre>
+
+<p>我就修改了这三个地方，还有一个修改路径的，由于我的路径本来就是绝对路径，我就不用修改了</p>
+
+<h2 id="cgi-环境变量">CGI 环境变量</h2>
+
+<p>对于 CGI 程序来说，它继承了系统的环境变量。 CGI 环境变量在 CGI 程序启动时初始化，在结束时销毁。 当一个 CGI 程序不是被 HTTP 服务器调用时，它的环境变量几乎就是系统环境变量的复制。</p>
+
+<p>当这个 CGI程序被HTTP服务器调用的时候，他的环境变量就会多了一下关于HTTP服务器、客户端、CGI传输过程等项目。</p>
+
+<p>CGI 环境变量有3种：与服务器相关的环境变量、与客户端有关的环境变量和与请求相关的环境变量。</p>
+
+<p>REQUEST_METHOD、QUERY_STRINC和CONTENT_LENGTH定义了数据如何传送到 CGI 程序。</p>
+
+<p>获取环境变量需要用到 getenv() 函数 &ndash; 从环境中取字符串，获取环境变量的值，依赖头文件 &ndash; stdlib.h 。</p>
+
+<pre><code>#include&lt;iostream&gt;
+#include&lt;stdlib.h&gt;
+using namespace std;
+const string ENV[24] = {
+        &quot;COMSPECE&quot;,&quot;DOCUMENT_ROOT&quot;,&quot;GATEWAY_INTERFACE&quot;,
+        &quot;HTTP_ACCEPT&quot;,&quot;HTTP_ACCEPT_ENCODING&quot;,
+        &quot;HTTP_ACCEPT_LANGUAGE&quot;,&quot;HTTP_CONNECTION&quot;,
+        &quot;HTTP_HOST&quot;,&quot;HTTP_USER_AGENT&quot;,&quot;PATH&quot;,
+        &quot;QUERY_STRING&quot;,&quot;REMOTE_ADDR&quot;,&quot;REMOTE_PORT&quot;,
+        &quot;REQUEST_METHOD&quot;,&quot;REQUEST_URI&quot;,&quot;SCRIPT_FILENAME&quot;,
+        &quot;SCRIPT_NAME&quot;,&quot;SERVER_ADDR&quot;,&quot;SERVER_ADMIN&quot;,
+        &quot;SERVER_NAME&quot;,&quot;SERVER_PORT&quot;,&quot;SERVER_PROTOCOL&quot;,
+        &quot;SERVER_SIGNATURE&quot;,&quot;SERVER_SOFTWARE&quot;
+};
+int main(){
+        cout &lt;&lt; &quot;Content-type:text/html\r\n\r\n&quot;;
+        cout &lt;&lt; &quot;&lt;html&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;title&gt;CGI Environment&lt;/title&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;body&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;table border = \&quot;0\&quot; cellspacing = \&quot;2\&quot; &gt;\n&quot;;
+        for (int i = 0 ; i &lt; 24 ; i++){
+                cout &lt;&lt; &quot;&lt;tr&gt;&lt;td&gt;&quot; &lt;&lt; ENV[i] &lt;&lt; &quot;&lt;/td&gt;&lt;td&gt;&quot;;
+                char *value = getenv(ENV[i].c_str() );
+                if(value != 0){
+                        cout &lt;&lt; value;
+                }else{
+                        cout &lt;&lt; &quot;Environment variable does not exit.&quot;;
+                }
+                cout &lt;&lt; &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+        }
+        cout &lt;&lt; &quot;&lt;/table&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/body&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/html\n&gt;&quot;;
+        return 0;
+}
+</code></pre>
+
+<p>之后很多的环境变量都是空的，但是当做 CGI 运行之后，各个环境变量里都会有值了.<br/>
+再次把 CGI 程序手动执行一次，发现和第一次手动执行的 CGI 程序结果一致。<br/>
+说明 CGI 是一个进程，处理完一个请求后退出， 在下一个请求到来时再创建一个新进程。<br/></p>
+
+<h3 id="get-参数的获取">GET 参数的获取</h3>
+
+<p>在 GET 方法下， CGI 程序无法直接从服务器的标准输入中获取数据，因为服务器把它从标准输入接收到的数据编码到环境变量 QUERY_STRING (或PATH_INFO)。<br/>
+采用 GET 方法时，只需将把这些数据附加到 URL 的末尾，如 ,这时 QUERY_STRING 的值为 a = 1 &amp; b = 2 &amp; c = 3。<br/>
+获取 GET 方法中的参数<br/>
+从逻辑上讲，size()成员函数应该似乎返回整型数值，但事实上，size操作返回是string::size_type类型的值。它定义为与unsigned型（unsigned int获unsigned long）具有相同含义，而且保证足够大的能够存储任意的string对象的长度。string::size_type它在不同的机器上，长度是可以不同的，并非固定的长度。但只要你使用了这个类型，就使得你的程序适合这个机器。与实际机器匹配。string对象的索引也应为size_type类型。<br/>
+<br/>
+没找到&ndash;返回   string::npos(代表 -1 表示不存在)<br/>
+epos = sData.find(sDelim,epos)) != string :: npos //从位置 epos 在字符串 sData 中查找字符 sDelim.<br/>
+getMethod.cpp</p>
+
+<pre><code>#include&lt;iostream&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;vector&gt;
+#include&lt;string&gt;
+using namespace std;
+vector&lt;string&gt; StringSplit (const string &amp; sData, const string &amp; sDelim){
+        vector&lt;string&gt; vItems;
+        vItems.clear();
+        //begin position
+        string :: size_type bpos = 0;
+        //end position
+        string :: size_type epos = 0;
+        string :: size_type nlen = sDelim.size();
+        //从位置 epos 在字符串 sData 中查找字符 sDelim
+        while ((epos = sData.find(sDelim,epos)) != string :: npos) {
+                vItems.push_back(sData.substr(bpos, epos - bpos));
+                // skip the symbol 
+                epos += nlen;
+                bpos = epos;
+        }
+        vItems.push_back(sData.substr(bpos, sData.size() - bpos));
+        return vItems;
+}
+
+int main(){
+        cout &lt;&lt; &quot;Content-type:text/html\r\n\r\n&quot;;
+        cout &lt;&lt; &quot;&lt;html&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;title&gt;Hello World -- First CGI Program &lt;/title&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;body&gt;\n&quot;;
+        cout &lt;&lt; &quot;get parameter: &lt;br/&gt;&quot;;
+        char *value = getenv(&quot;QUERY_STRING&quot;);
+        if(value != 0){
+                /*a = 1 &amp; b = 2 &amp; c = 3*/
+                vector&lt;string&gt; paras = StringSplit((const string)value,&quot;&amp;&quot;);
+                vector&lt;string&gt; :: iterator iter = paras.begin();
+                for (;iter != paras.end(); iter++){
+                        vector&lt;string&gt; singlepara = StringSplit(*iter,&quot;=&quot;);                        cout &lt;&lt; singlepara[0] &lt;&lt; &quot; &quot; &lt;&lt; singlepara[1] &lt;&lt; &quot;&lt;br/&gt;&quot;;
+                }
+                cout &lt;&lt; &quot;The value is :&quot;;
+                cout &lt;&lt; value &lt;&lt; endl;
+        }
+        cout &lt;&lt; &quot;&lt;/body&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/html\n&gt;&quot;;
+        return 0;
+}
+</code></pre>
+
+<h3 id="post-参数的获取">POST 参数的获取</h3>
+
+<p>在 POST 方法下， CGI 程序可以只从服务器的标准输入中获取数据，不过要先从 CONTENT_LENGTH 环境变量中得到 POST 参数的长度，再读取相应长度的内容。<br/>
+获取 POST 参数的内容
+%[^&amp;]的意思是指输入的数据要遇上&amp;才结束；<br/>
+post.html</p>
+
+<pre><code>&lt;html&gt;
+        &lt;head&gt;
+        &lt;title&gt; CGI Post &lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+                &lt;tr&gt;&lt;td&gt;
+                &lt;div style = &quot;font-weight:bold; font-size:15px&quot;&gt;Method:POST&lt;/div&gt;
+                &lt;div&gt;lease input 2 number: &lt;/div&gt;
+                //方法，跳转到./cgi-bin/post后台计算
+                &lt;form method = &quot;post&quot; action = &quot;./cgi-bin/post&quot;&gt;
+                &lt;input type = &quot;txt&quot; size = &quot;3&quot; name = &quot;m&quot;&gt; *
+                &lt;input type = &quot;txt&quot; size = &quot;3&quot; name = &quot;n&quot;&gt; =
+                &lt;input type = &quot;submit&quot; value = &quot;result&quot;&gt;
+                &lt;/form&gt;
+                &lt;/td&gt;&lt;/tr&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+</code></pre>
+
+<p>post.cpp</p>
+
+<pre><code>#include&lt;iostream&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;stdio.h&gt;
+using namespace std;
+int main(){
+        cout &lt;&lt; &quot;Content-type:text/html\r\n\r\n&quot;;
+        cout &lt;&lt; &quot;&lt;html&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;title&gt;Testing Post &lt;/title&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/head&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;body&gt;\n&quot;;
+        //获取内容长度
+        char *lenstr = getenv(&quot;CONTENT_LENGTH&quot;);
+        if (lenstr == NULL){
+                cout &lt;&lt; &quot;Error, CONTENT_LENGTH should be entered!&quot; &lt;&lt; &quot;&lt;br/&gt;&quot;;
+        }else{
+                int len = atoi(lenstr);
+                char poststr[20];
+                // fgets 从标准输入 stdin 中获的 len + 1 长度的内容
+                fgets(poststr,len + 1, stdin);
+                cout &lt;&lt; &quot;poststr: &quot; &lt;&lt; poststr &lt;&lt; &quot;&lt;br/&gt;&quot;;
+                char m[10],n[10];
+                // int sscanf() 匹配几个就返回几
+                // %[^&amp;]的意思是指输入的数据要遇上&amp;才结束；m 遇上 &amp; 之前的字符， n 是 &amp; 之后的字符
+                if(sscanf(poststr,&quot;m=%[^&amp;]&amp;n=%s&quot;,m,n)!=2){
+                        cout &lt;&lt; &quot;Error: parameters are not right! &lt;br/&gt;&quot;;
+                }else {
+                        cout &lt;&lt; &quot; m * n = &quot; &lt;&lt; atoi(m) * atoi(n) &lt;&lt; &quot;&lt;br/&gt;&quot;;
+                }
+        }
+        cout &lt;&lt; &quot;&lt;/body&gt;\n&quot;;
+        cout &lt;&lt; &quot;&lt;/html\n&gt;&quot;;
+        return 0;
+}
+</code></pre>
+
+<p>编译了之后，将编译过的文件 post 放到 <font color = "#dd0000"> cgi-bin </font>文件夹中, 将 post.html 放到 <font color="#dd0000">htdocs</font> 文件夹中。<br/></p>
+
+<p>接下来还有 Cookie 的内容等我的下次更新，更新上去。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
