@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Tingw0w</title>
-    <link>uildDrafts/categories/</link>
+    <link>https://tingw0w.github.io/categories/</link>
     <description>Recent content in Categories on Tingw0w</description>
     <generator>Hugo -- gohugo.io</generator>
     
-	<atom:link href="uildDrafts/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://tingw0w.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>
