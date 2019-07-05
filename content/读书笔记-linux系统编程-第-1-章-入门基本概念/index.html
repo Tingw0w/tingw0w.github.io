@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[读书笔记] Linux系统编程 第 1 章 入门基本概念 // Tingw0w</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tingw0w" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://tingw0w.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[读书笔记] Linux系统编程 第 1 章 入门基本概念"/>
+<meta name="twitter:description" content="本次学习笔记是从 《Linux 系统编程》这本书习得，如有我理解错误，或者侵权的地方请联系我 [联系方式 QQ] 573836705。 《Linux 系统编程》 涵盖的是现代 Linux 机器上所使用的系统编程 API, 也就是说这本书给的都是使用的接口 (的确这本书里面都是 Linux 下的函数，以及函数的使用方式)。
+系统编程的基础 Linux 系统编程有 3 大基石：系统调用、C 库和 C 编译器。
+系统调用 系统编程始于系统调用，也终于系统调用。系统调用 (通常称为 syscall) 是为了从操作系统请求一些服务或资源。
+C库 C库 (libc) 是 Unix 应用程序的核心。即使你是使用其他语言编程，通常还是会通过该机器语言封装的 C 库来提供核心服务，以方便系统调用。 在现代 Linux 系统中，C 库由 GNU libc 提供， 简称 glibc 。
+C 编译器 在 Linux 中，标准 C 编译器是由 GNU 编译器工具集 (GNU Compiler Collection gcc) 提供的。 最初 gcc 是 GNU 版本的 C 编译器 cc，因此，gcc 表示 GNU C 编译器 (GNU C Compiler)。 随着时间的退役，gcc 支持越来越多的语言。之后 gcc 就成为 GNU 编译器家族的代名词。 GNU C&#43;&#43; 编译器是 Linux 系统为 C&#43;&#43; 提供的标准编译器，由二进制程序 g&#43;&#43; 提供。"/>
+
+    <meta property="og:title" content="[读书笔记] Linux系统编程 第 1 章 入门基本概念" />
+<meta property="og:description" content="本次学习笔记是从 《Linux 系统编程》这本书习得，如有我理解错误，或者侵权的地方请联系我 [联系方式 QQ] 573836705。 《Linux 系统编程》 涵盖的是现代 Linux 机器上所使用的系统编程 API, 也就是说这本书给的都是使用的接口 (的确这本书里面都是 Linux 下的函数，以及函数的使用方式)。
+系统编程的基础 Linux 系统编程有 3 大基石：系统调用、C 库和 C 编译器。
+系统调用 系统编程始于系统调用，也终于系统调用。系统调用 (通常称为 syscall) 是为了从操作系统请求一些服务或资源。
+C库 C库 (libc) 是 Unix 应用程序的核心。即使你是使用其他语言编程，通常还是会通过该机器语言封装的 C 库来提供核心服务，以方便系统调用。 在现代 Linux 系统中，C 库由 GNU libc 提供， 简称 glibc 。
+C 编译器 在 Linux 中，标准 C 编译器是由 GNU 编译器工具集 (GNU Compiler Collection gcc) 提供的。 最初 gcc 是 GNU 版本的 C 编译器 cc，因此，gcc 表示 GNU C 编译器 (GNU C Compiler)。 随着时间的退役，gcc 支持越来越多的语言。之后 gcc 就成为 GNU 编译器家族的代名词。 GNU C&#43;&#43; 编译器是 Linux 系统为 C&#43;&#43; 提供的标准编译器，由二进制程序 g&#43;&#43; 提供。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tingw0w.github.io/content/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-%E7%AC%AC-1-%E7%AB%A0-%E5%85%A5%E9%97%A8%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" />
+<meta property="article:published_time" content="2019-07-05T12:39:15&#43;08:00"/>
+<meta property="article:modified_time" content="2019-07-05T12:39:15&#43;08:00"/>
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://tingw0w.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Tingw0w" /></a>
+      <h1>Tingw0w</h1>
+      <p> </p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/Tingw0w"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/gohugoio"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[读书笔记] Linux系统编程 第 1 章 入门基本概念</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 5, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<p>本次学习笔记是从 《Linux 系统编程》这本书习得，如有我理解错误，或者侵权的地方请联系我 [联系方式 QQ] 573836705。<br/>
+《Linux 系统编程》 涵盖的是现代 Linux 机器上所使用的系统编程 API, 也就是说这本书给的都是使用的接口 (的确这本书里面都是 Linux 下的函数，以及函数的使用方式)。<br/></p>
+
+<h1 id="系统编程的基础">系统编程的基础</h1>
+
+<p>Linux 系统编程有 3 大基石：系统调用、C 库和 C 编译器。</p>
+
+<h2 id="系统调用">系统调用</h2>
+
+<p>系统编程始于系统调用，也终于系统调用。系统调用 (通常称为 syscall) 是为了从操作系统请求一些服务或资源。</p>
+
+<h2 id="c库">C库</h2>
+
+<p>C库 (libc) 是 Unix 应用程序的核心。即使你是使用其他语言编程，通常还是会通过该机器语言封装的 C 库来提供核心服务，以方便系统调用。<br/>
+在现代 Linux 系统中，C 库由 GNU libc 提供， 简称 <font color =  red >glibc </font>。</p>
+
+<h2 id="c-编译器">C 编译器</h2>
+
+<p>在 Linux 中，标准 C 编译器是由 GNU 编译器工具集 (GNU Compiler Collection gcc) 提供的。<br/>
+最初 gcc 是 GNU 版本的 C 编译器 cc，因此，gcc 表示 GNU C 编译器 (GNU C Compiler)。 随着时间的退役，gcc 支持越来越多的语言。之后 gcc 就成为 GNU 编译器家族的代名词。<br/>
+GNU C++ 编译器是 Linux 系统为 C++ 提供的标准编译器，由二进制程序 g++ 提供。</p>
+
+<h3 id="api-和-abi">API 和 ABI</h3>
+
+<h4 id="api-应用程序编程接口-application-programming-interfacing-api">API &ndash; 应用程序编程接口 (Application Programming Interfacing, API)</h4>
+
+<p>API 定义了软件模块在源码层交互的接口。<br/>
+实现了如下抽象：一个软件模块 (通常是较高层的代码) 如何调用另一个软件模块 (通常是较低层的代码)。<br/></p>
+
+<h4 id="abi-应用程序二进制接口-application-binary-interface-abi">ABI &ndash; 应用程序二进制接口 (Application Binary Interface，ABI)</h4>
+
+<p>ABI 定义了两个软件 模块在特定体系结构上的二进制接口。<br/>
+定义了应用内部如何交互，应用如何与内核交互，以及如何和库交互。<br/>
+API 保证了源码兼容 (source compatible)，而 ABI 保证了 “二进制兼容 (binary compatibility)”, 确保对于同一个 ABI，目标代码可以在任何系统上正常工作，而不需要重新编译。<br/>
+ABI  是由内核和工具链定义和实现的。<br/></p>
+
+<h3 id="标准">标准</h3>
+
+<p>Linux 致力于两大主流标准兼容：POSIX 和单一 UNIX 规范 (Single UNIX Specification, SUS)。<br/>
+POSIX (Portable Operating System Interface, 可移植操作系统接口)。<br/></p>
+
+<h1 id="linux-编程的概念">Linux 编程的概念</h1>
+
+<h2 id="文件和文件系统">文件和文件系统</h2>
+
+<p>文件是 Linux 系统中最基础最重要的抽象。Linux 遵循一切皆文件的理念。<br/>
+文件必须先打开才能访问。<br/>
+文件打开方式有只读、只写和读写模式。文件打开后是通过唯一描述符来引用，该描述符是从打开文件关联的元数据到文件本身的映射。在 Linux 内核中，文件用一个整数表示 (C 语言的 int 类型)，成为<font color = red> 文件描述符 (file descriptor，简称 fd) </font>。文件描述符在用户空间共享，用户程序通过文件描述符可以直接访问文件。Linux 系统编程的大部分工作都会涉及打开、操纵、关闭以及其他文件描述符操作。<br/></p>
+
+<h3 id="普通文件-regular-files">普通文件 (regular files)</h3>
+
+<p>普通文件包含以字节流 (即线性数组) 组织的数据。<br/>
+在 Linux 中文件没有高级组织结构或格式，文件中包含的字节可以是任意值，可以以任意方式进行组织。在系统层，除了字节流，Linux 对文件结构没有特定要求。<br/>
+在 Linux 中，可以从文件中的任意字节开始读写。对文件的操作是从某个字节开始，即文件 “地址”。
+该地址称为文件位置 (file location) 或文件偏移 (file offset)。<br/>
+文件位置是内核中与每个打开的问价关联的元数据中很重要的一项。第一次打开文件时，其偏移为 0。文件位置的最大值只取决于存储该值的 C 语言类型的大小，在现在 Linux 操作系统上，该值是 64位。<br/>
+文件的大小是通过字节来计算的，称为文件长度。文件长度可以通过截断 (truncation) 操作进行改变。<br/>
+同一个文件可以由多个进程或同一个进程多次打开。系统会为每个打开的文件实例提供唯一文件描述符。因此，进程可以共享文件描述符，支持多个进程使用同一个文件描述符。<br/>
+索引节点 inode (最初称为信息节点，imformation node)<br/>
+inode 是文件系统为该文件分配的唯一整数值 (但在整个系统中不一定是唯一的)。该整数值称为 inode number, 通常简称为 i-number 或 ino。索引节点中会保存和文件相关的元数据，如文件修改时间戳、所有者、类型、长度以及文件数据的位置 —— 但不包含文件名。<br/></p>
+
+<h3 id="目录和链接">目录和链接</h3>
+
+<p>文件通常是通过文件名从用户空间打开。<br/>
+目录提供访问文件需要的名称，目录是可读名称到索引编号之间的映射。名称和索引节点之间的配对称为链接 (link)。内核直接通过该映射吧文件名解析为索引节点。<br/></p>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%201%20%E7%AB%A0%E8%8A%82%20%E5%85%A5%E9%97%A8%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/link.png" width="700" height="220">
+</center>
+<br/>
+如果用户空间的应用请求打开指定文件，内核会打开包含该文件名的目录，搜索该文件。内核根据文件名获取索引节点编号。通过索引节点编号可以找到该节点。索引节点包含和文件关联的元数据，其中包括文件数据在磁盘上的存储位置。<br/>
+刚开始，磁盘上只有一个目录，称为根目录，以路径 <font color=red> / </font> 表示。<br/>
+目录内的链接可以指向其他目录的索引节点。目录可以嵌套到其他目录中，形成目录层。<br/>
+当内核打开类似的路径名时，它会遍历路径中的每个目录项 (directory entry，在内核中称为 dentry)，查找下一个入口项的索引节点。例子：/home/blackbeard/landscaping.txt
+内核起始项是 <font color = red> /  </font>,先获取 home 的索引节点，然后获取 blackbeard 的索引节点，最后获取 landscaping.txt 的索引节点。&mdash; 该操作称为目录解析或路径解析。<br/>
+- 绝对路径 &ndash; 从根目录开始的路径称为完整路径。<br/>
+- 相对路径 &ndash; 在当前工作目录下开始路径解析。<br/>
+目录必须通过特殊的系统调用来操作，这些系统调用只支持两类操作: 添加链接和删除链接。<br/></p>
+
+<h4 id="硬连接">硬连接</h4>
+
+<p>硬链接 (hard link) &ndash; 不同名称的多个链接映射到同一个索引节点。<br/>
+硬连接支持多个路径指向同一份数据，可以在同一个目录下，也可以在不同的目录下。<br/>
+要从目录中删除文件，需要从目录结构中取消链接 (unlink) 该文件，从目录中删除该文件名的索引节点即可。每个索引节点包含链接计数 (link count)，记录该索引节点在文件系统中的链接数。当 unlink 某个路径时候，其链接计数会减 1；只有当链接计数为 0 时，索引节点及其关联的数据才会从文件系统真正删除。<br/></p>
+
+<h4 id="符号链接-文件访问的快捷方式">符号链接 &ndash; 文件访问的快捷方式</h4>
+
+<p>硬连接不能跨越多个文件系统，因为索引节点编号在自己的文件系统之外没有任何意义。<br/>
+符号链接 (synbolic links, symlinks) &ndash; 跨越文件系统建立链接。<br/>
+符号链接类似于普通文件，每个符号链接都有自己的索引节点和数据块，包含链接的文件的绝对路径 &ndash; 意味着符号链接可以指向任何地方。指向不存在的文件的符号链接称为坏链接 (broken link)。<br/>
+符号链接 (比硬连接更大的开销) &ndash; 有效解析符号连接需要解析两个文件：
+1. 符号链接本身
+2. 该链接所指向的文件</p>
+
+<h4 id="特殊文件">特殊文件</h4>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%201%20%E7%AB%A0%E8%8A%82%20%E5%85%A5%E9%97%A8%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/special%20file.png" width="700" height="180">
+</center>
+<br/>
+特殊文件 (special file) 是以文件来表示的内核对象。<br/>
+Linux 只支持 4 中特殊文件：块设备文件、字符设备文件、命名管道以及 UNIX 套接字。
+在 UNIX 系统中，访问设备是通过设备文件来实现的，把设备当做文件系统中的普通文件。设备文件支持打开、读和写操作，允许用户空间程序访问和控制系统上的 (物理和虚拟) 设备。<br/>
+UNIX 设备通常可以划分成两组：字符设备 (character devices) 和块设备 (block device)。<br/>
+- 字符设备是作为线性字节队列来访问的。
+- 块设备是作为字节数组来访问的。设备驱动把字节映射到可寻址的设备上，用户空间可以按任意顺序随意访问数组中的任何字节——可能读取字节 12，然后读取字节 7，然后又读取字节 12。块设备通常是存储设备。
+- 命名管道 (named pipes) ，通常称为 FIFO。是以文件描述符作为通信信道的进程间通信 (IPC) 机制，它可以通过特殊文件夹访问。普通管道是将一个程序的输出以 “管道” 形式作为另一个程序的输入。普通管道是通过系统调用在内存中创建的，并不存在与仍和文件系统中。命名管道和普通管道一样，但它是通过 FIFO 特殊文件来访问的。不相关的进程可以访问该文件并进行交互。
+- 套接字 (socket) 支持不同进程间的通信，这两个进程可以在同一台机器，也可以在不同机器。</p>
+
+<h4 id="文件系统和命名空间">文件系统和命名空间</h4>
+
+<p>Linux 提供了全局统一的文件和目录命名空间。<br/>
+文件系统是以合理有效的层次结构组织的文件和目录的集合。在文件和目录的全局命名空间中，可以分别添加和删除文件系统 &ndash; 挂载 (mounting) 和卸载 (unmounting) 。每个文件都要挂载到命名空间的特定位置，该位置即挂载点 (mounting point) 。第一个被挂载的文件系统实在命名空间的根目录  /  下，称为跟文件系统 (root filesystem)。<br/>
+文件系统都是存在物理介质上的，不过 Linux 还支持只保存在内存上的虚拟文件系统。<br/>
+块设备的最小寻址单元称为扇区 (sector)。扇区是设备的物理属性。512字节<br/>
+文件系统中最小的逻辑寻址单元是块 (block) 。块是文件系统的抽象，而不是物理介质的抽象。在 Linux，块通常比扇区大，但是必须小于页 (page) ，也是内存的最小寻址单元 (内存管理单元是个硬件)。 512B，1KB，4KB。<br/></p>
+
+<h2 id="进程">进程</h2>
+
+<p>进程是执行时的目标代码：活动的、正在运行的程序。<br/>
+但是进程不仅包含目标代码，它还包含数据、资源、状态和虚拟计算机。<br/>
+进程的生命周期是从可执行目标代码开始，这些机器可运行的代码是以内核能够理解的形式存在，在 Linux 下，最常见的格式称为 “可执行和可链接的格式 (Executable and Linkable Format, ELF)”。<br/></p>
+
+<h3 id="线程">线程</h3>
+
+<p>每个进程包含一个或多个执行线程 (threads) 。线程是进程内的活动单元 &ndash; 线程是负责执行代码和管理进程运行状态的抽象。</p>
+
+<h3 id="进程层次结构">进程层次结构</h3>
+
+<p>每个进程都由唯一的正整数标识，称为<font color = red> 进程 ID (pid) </font>。第一个进程的 pid 是 1，后续的每个进程都有一个新的、唯一的 pid。<br/>
+在 Linux 中，进程由严格的层次结构，即进程树。进程树的根是第一个进程，称为 init 进程，通常是 init 程序。新的进程是通过系统调用 frok() 创建的。frok() 会创建调用进程的副本。原进程称为父进程， frok() 创建的新进程称为子进程。除了第一个进程外，每个进程都有父进程。如果父进程先于子进程终止，内核会将 init 进程指定为它的父进程。<br/>
+僵尸进程 (zombie) &ndash; 一个进程已经终止，但是父进程并不知道其状态。</p>
+
+<h2 id="用户和组">用户和组</h2>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%201%20%E7%AB%A0%E8%8A%82%20%E5%85%A5%E9%97%A8%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/uid.png" width="700" height="180">
+</center>
+Linux 中通过用户和组进行权限认证，每个用户和一个唯一的正整数关联，该整数称为用户 ID (uid)。每个进程和一个 uid 关联，用来识别运行这个进程的用户 &ndash; 称为进程的真实 uid (real uid)。用户一般通过用户名而不是 id 老表示。用户名其对应的 uid 保存在 /etc/passwd中，系统库会把用户名映射到对应的 uid 上。<br/>
+超级用户 root 的 uid 是 0。<br/>
+除了真实 uid 外，每个进程还包含有效的 uid (effective uid)，保留 uid (saved uid) 和文件系统 uid (filesystem uid)。真实 uid 总是启动进程的用户 uid，有效 uid 在不同情况下回发生变化，从而支持进程切换成其他用户权限来执行。保留 uid 保存原来的有效 uid，其值决定了用户将切换成哪个有效 uid，文件系统 uid 通常和有效 uid 等效，用于检测文件系统的访问权限。<br/>
+每个用户属于一个或多个组，包括在 /etc/passwd 中给出的基础组 (primary group) 或登陆组 (login group)，也可能是 /etc/group 中给出的很多其他附加组 (supplemental group)。每个进程和相应的组 ID (gid) 相关联，也包括真实 gid ，有效的 gid，保留 gid，文件系统 gid。<br/></p>
+
+<h2 id="权限">权限</h2>
+
+<p>三维分别表示读、写和执行权限。<br/></p>
+
+<table>
+<thead>
+<tr>
+<th>位</th>
+<th>八进制值</th>
+<th>文本值</th>
+<th>对应的权限</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>8</td>
+<td>400</td>
+<td>r&mdash;&mdash;&ndash;</td>
+<td>所有者可读</td>
+</tr>
+
+<tr>
+<td>7</td>
+<td>200</td>
+<td>-w&mdash;&mdash;-</td>
+<td>所有者可写</td>
+</tr>
+
+<tr>
+<td>6</td>
+<td>100</td>
+<td>&ndash;x&mdash;&mdash;</td>
+<td>所有者可执行</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>040</td>
+<td>&mdash;r&mdash;&ndash;</td>
+<td>组用户可读</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>020</td>
+<td>&mdash;-w&mdash;-</td>
+<td>组用户可写</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>010</td>
+<td>&mdash;&ndash;x&mdash;</td>
+<td>组用户可执行</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>004</td>
+<td>&mdash;&mdash;r&ndash;</td>
+<td>所有用户可读</td>
+</tr>
+
+<tr>
+<td>1</td>
+<td>002</td>
+<td>&mdash;&mdash;-w-</td>
+<td>所有用户可写</td>
+</tr>
+
+<tr>
+<td>0</td>
+<td>001</td>
+<td>&mdash;&mdash;&ndash;x</td>
+<td>所有用户可执行</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="信号">信号</h2>
+
+<p>信号是一种单项异步通知机制。<br/>
+信号会 “干扰”正在执行的进程，不管当前进程正在做什么，都会立即执行预定义的操作 (除了 SIGKILL (进程中断) 和 SIGSTOP (进程停止))。当进程接收到信号时，可以控制正在执行的操作。进程可以接受默认的信号处理操作，还可以选择显示忽略或处理信号。忽略的信号会被丢弃，不做处理。处理信号会执行用户提供的信号处理函数，程序收到信号会立即跳到处理函数执行。当信号处理函数返回时，程序控制逻辑将返回之前中断的指令处继续执行。由于信号的异步性，信号处理函数需要注意不要破坏之前的代码，只执行异步安全 (async-safe, 也成为信号安全) 的函数。</p>
+
+<h2 id="进程间通信">进程间通信</h2>
+
+<p>Linux 支持的进程间通信机制包括管道，命名管道，信号量，消息队列，共享内存和快速用户空间互斥 (futex)。</p>
+
+<h2 id="错误处理">错误处理</h2>
+
+<p>变量 errmo 在 <errno.h>终定义如下：</p>
+
+<pre><code class="language-c">extern int errno;
+</code></pre>
+
+<p>errno 可以修改的左值。</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">处理器预定义</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">E2BIG</td>
+<td align="center">参数列表太长</td>
+</tr>
+
+<tr>
+<td align="center">EACCES</td>
+<td align="center">权限不足</td>
+</tr>
+
+<tr>
+<td align="center">EAGAIN</td>
+<td align="center">重试</td>
+</tr>
+
+<tr>
+<td align="center">EBADF</td>
+<td align="center">文件号错误</td>
+</tr>
+
+<tr>
+<td align="center">EBUSY</td>
+<td align="center">设备或资源忙</td>
+</tr>
+
+<tr>
+<td align="center">ECHILD</td>
+<td align="center">无子进程</td>
+</tr>
+
+<tr>
+<td align="center">EDOM</td>
+<td align="center">数学参数不再函数城内</td>
+</tr>
+
+<tr>
+<td align="center">EEXIST</td>
+<td align="center">文件已存在</td>
+</tr>
+
+<tr>
+<td align="center">EFAULT</td>
+<td align="center">地址错误</td>
+</tr>
+
+<tr>
+<td align="center">EFBIG</td>
+<td align="center">文件太大</td>
+</tr>
+
+<tr>
+<td align="center">EINTR</td>
+<td align="center">系统调用被中断</td>
+</tr>
+
+<tr>
+<td align="center">EINVAL</td>
+<td align="center">参数无效</td>
+</tr>
+
+<tr>
+<td align="center">EIO</td>
+<td align="center">I/O 错误</td>
+</tr>
+
+<tr>
+<td align="center">EISDIR</td>
+<td align="center">是目录</td>
+</tr>
+
+<tr>
+<td align="center">EMFILE</td>
+<td align="center">打开文件太多</td>
+</tr>
+
+<tr>
+<td align="center">EMLINK</td>
+<td align="center">太多链接</td>
+</tr>
+
+<tr>
+<td align="center">ENFILE</td>
+<td align="center">文件表溢出</td>
+</tr>
+
+<tr>
+<td align="center">ENODEV</td>
+<td align="center">无此设备</td>
+</tr>
+
+<tr>
+<td align="center">ENOENT</td>
+<td align="center">无此文件或目录</td>
+</tr>
+
+<tr>
+<td align="center">ENOEXEC</td>
+<td align="center">执行格式错误</td>
+</tr>
+
+<tr>
+<td align="center">ENOMEM</td>
+<td align="center">内存用尽</td>
+</tr>
+
+<tr>
+<td align="center">ENOSPC</td>
+<td align="center">设备无剩余空间</td>
+</tr>
+
+<tr>
+<td align="center">ENOTDIR</td>
+<td align="center">非目录</td>
+</tr>
+
+<tr>
+<td align="center">ENOTTY</td>
+<td align="center">不合理 I/O 控制操作</td>
+</tr>
+
+<tr>
+<td align="center">ENXIO</td>
+<td align="center">无此设备或地址</td>
+</tr>
+
+<tr>
+<td align="center">EPERM</td>
+<td align="center">操作不允许</td>
+</tr>
+
+<tr>
+<td align="center">EPIPE</td>
+<td align="center">管道损坏</td>
+</tr>
+
+<tr>
+<td align="center">ERANGE</td>
+<td align="center">结果范围太大</td>
+</tr>
+
+<tr>
+<td align="center">EROFS</td>
+<td align="center">只读文件系统</td>
+</tr>
+
+<tr>
+<td align="center">ESPIPE</td>
+<td align="center">非法定位</td>
+</tr>
+
+<tr>
+<td align="center">ESRCH</td>
+<td align="center">无此进程</td>
+</tr>
+
+<tr>
+<td align="center">ETXTBSY</td>
+<td align="center">文本文件忙</td>
+</tr>
+
+<tr>
+<td align="center">EXDEV</td>
+<td align="center">跨文件系统链接</td>
+</tr>
+</tbody>
+</table>
+
+<p>errno 值转换成对应的文本 (C 库)</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+void perror (const char *str)
+</code></pre>
+
+<p>该函数向<font color = red> stderr (标准错误输出) </font>打印以 str 指向的字符串为前缀，紧跟着一个冒号 (:)，然后是由 errno表示的当前错误的字符串。</p>
+
+<pre><code class="language-c">#include &lt;string.h&gt;
+char *strerror (int errnum)
+
+</code></pre>
+
+<p>返回错误的字符串指针</p>
+
+<pre><code class="language-c">#include &lt;string.h&gt;
+int strerror_r (int errnum,char *buf, size_t len);
+</code></pre>
+
+<p>strerror_r() 是线程安全的
+每个线程都有自己的 errno ，因此它是线程安全的。
+跨函数调用时，如果需要保留 errno 值，就需要保留该值：</p>
+
+<pre><code class="language-c">if(fsync(fd) == -1){
+    const int err = errno;
+    fprintf(stderr,&quot;fsync failed: %s\n&quot;,strerror(errno));
+    if(err == EIO){
+         fprintf(stderr,&quot;I/O error on %d!\n&quot;,fd);
+         exit EXIT_FAILURE;
+    }
+}
+</code></pre>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
