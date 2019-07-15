@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[读书笔记] Linux 第 2 章 文件 I/O 上 // Tingw0w</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tingw0w" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://tingw0w.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[读书笔记] Linux 第 2 章 文件 I/O 上"/>
+<meta name="twitter:description" content="文件I/O 在对文件进行读写操作之前，首先要打开文件。内核会为每个进程维护一个打开文件的列表，该列表称为文件表 (file table)。 文件表是由一些非负整数进行索引，这些非负整数称为文件描述符 (file descriptors, fds)。列表的每一项是一个打开文件的信息，包括指向该文件索引节点 (inode) 内存拷贝的指针以及关联的元数据，如文件位置指针和访问模式。用户空间和内核空间都使用文件描述符作物唯一 cookies : 打开文件会返回文件描述符，而后续操作 (读写等) 都把文件描述符作为基本参数。 每个进程至少包含三个文件描述符：0、1和 2，除非显式的关闭这些描述符。  文件描述符 0 表示变准输入 (sdtin)，1 表示标准输出 (stdout)，2 表示标准错误 (stdeer)。Linux C 标准库没有直接引用这些整数，而是提供了三个宏：STDIN_FILENO, STDOUT_FILENO 和 STDERR_FILENO。
+打开文件 最基本的文件访问方法时系统调用 read() 和 write()。
+但是，在访问文件之前，必须先通过 open() 或 creat() 打开文件。一旦完成文件读写，还应该调用系统调用 close() 关闭该文件。
+ 
+系统调用 open() #include &lt;sys/types.h&gt; #include&lt;sys/stat.h&gt; #include&lt;fcntl.h&gt; int open(const char *name, int flags); int open(const char *name, int flags,mode_t mode);  open() 调用成功，会返回文件描述符，指向路径名 name 所制定的文件。文件位置即文件的气势位置 (0)，文件打开方式是根据参数 flags 来确定的。"/>
+
+    <meta property="og:title" content="[读书笔记] Linux 第 2 章 文件 I/O 上" />
+<meta property="og:description" content="文件I/O 在对文件进行读写操作之前，首先要打开文件。内核会为每个进程维护一个打开文件的列表，该列表称为文件表 (file table)。 文件表是由一些非负整数进行索引，这些非负整数称为文件描述符 (file descriptors, fds)。列表的每一项是一个打开文件的信息，包括指向该文件索引节点 (inode) 内存拷贝的指针以及关联的元数据，如文件位置指针和访问模式。用户空间和内核空间都使用文件描述符作物唯一 cookies : 打开文件会返回文件描述符，而后续操作 (读写等) 都把文件描述符作为基本参数。 每个进程至少包含三个文件描述符：0、1和 2，除非显式的关闭这些描述符。  文件描述符 0 表示变准输入 (sdtin)，1 表示标准输出 (stdout)，2 表示标准错误 (stdeer)。Linux C 标准库没有直接引用这些整数，而是提供了三个宏：STDIN_FILENO, STDOUT_FILENO 和 STDERR_FILENO。
+打开文件 最基本的文件访问方法时系统调用 read() 和 write()。
+但是，在访问文件之前，必须先通过 open() 或 creat() 打开文件。一旦完成文件读写，还应该调用系统调用 close() 关闭该文件。
+ 
+系统调用 open() #include &lt;sys/types.h&gt; #include&lt;sys/stat.h&gt; #include&lt;fcntl.h&gt; int open(const char *name, int flags); int open(const char *name, int flags,mode_t mode);  open() 调用成功，会返回文件描述符，指向路径名 name 所制定的文件。文件位置即文件的气势位置 (0)，文件打开方式是根据参数 flags 来确定的。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tingw0w.github.io/content/linux-2-1/" />
+<meta property="article:published_time" content="2019-07-15T13:07:11&#43;08:00"/>
+<meta property="article:modified_time" content="2019-07-15T13:07:11&#43;08:00"/>
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://tingw0w.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Tingw0w" /></a>
+      <h1>Tingw0w</h1>
+      <p> </p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/Tingw0w"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/gohugoio"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[读书笔记] Linux 第 2 章 文件 I/O 上</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 15, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          7 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<h1 id="文件i-o">文件I/O</h1>
+
+<p>在对文件进行读写操作之前，首先要打开文件。内核会为每个进程维护一个打开文件的列表，该列表称为文件表 (file table)。 文件表是由一些非负整数进行索引，这些非负整数称为文件描述符 (file descriptors, fds)。列表的每一项是一个打开文件的信息，包括指向该文件索引节点 (inode) 内存拷贝的指针以及关联的元数据，如文件位置指针和访问模式。用户空间和内核空间都使用文件描述符作物唯一 cookies : 打开文件会返回文件描述符，而后续操作 (读写等) 都把文件描述符作为基本参数。
+每个进程至少包含三个文件描述符：0、1和 2，除非显式的关闭这些描述符。
+<br/>
+文件描述符 0 表示变准输入 (sdtin)，1 表示标准输出 (stdout)，2 表示标准错误 (stdeer)。Linux C 标准库没有直接引用这些整数，而是提供了三个宏：STDIN_FILENO, STDOUT_FILENO 和 STDERR_FILENO。</p>
+
+<h2 id="打开文件">打开文件</h2>
+
+<p>最基本的文件访问方法时系统调用 read() 和 write()。</p>
+
+<p>但是，在访问文件之前，必须先通过 open() 或 creat() 打开文件。一旦完成文件读写，还应该调用系统调用 close() 关闭该文件。</p>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%202%20%E7%AB%A0%E8%8A%82%20%E4%B8%8A/open.png" width="700" height="100">
+</center></p>
+
+<h3 id="系统调用-open">系统调用 open()</h3>
+
+<pre><code>#include &lt;sys/types.h&gt;
+#include&lt;sys/stat.h&gt;
+#include&lt;fcntl.h&gt;
+
+int open(const char *name, int flags);
+int open(const char *name, int flags,mode_t mode);
+</code></pre>
+
+<p>open() 调用成功，会返回文件描述符，指向路径名 name
+所制定的文件。文件位置即文件的气势位置 (0)，文件打开方式是根据参数 flags 来确定的。</p>
+
+<h4 id="open-的-flags-参数">open() 的 flags 参数、</h4>
+
+<table>
+<thead>
+<tr>
+<th align="center">flags 参数</th>
+<th align="left">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">O_APPEND</td>
+<td align="left">文件将以追加模式打开</td>
+</tr>
+
+<tr>
+<td align="center">O_ASYNC</td>
+<td align="left">当制定的文件可读或可写时，会生成一个信号 (默认是 SIGIO)。O_ASYNC 标准为只适用于 FIFO、管道、 socket 和终端，不适用于普通文件。</td>
+</tr>
+
+<tr>
+<td align="center">O_CLIEXEC</td>
+<td align="left">在打开的文件上设置 “执行时关闭” 标志位。在执行新的进程时，文件会自动关闭。</td>
+</tr>
+
+<tr>
+<td align="center">O_CREAT</td>
+<td align="left">当参数 name 指定的文件不存在时，内核会自动创建。如果文件已存在，除非指定了标志位 O_EXCL, 否则该标志位无效。</td>
+</tr>
+
+<tr>
+<td align="center">O_DIRECT</td>
+<td align="left">打开文件用于直接 I/O。</td>
+</tr>
+
+<tr>
+<td align="center">O_DIRECTORY</td>
+<td align="left">如果参数 name 不是目录，open() 就会调用失败。该标志位被置位时，内部会调用 oepndir()。</td>
+</tr>
+
+<tr>
+<td align="center">O_EXCL</td>
+<td align="left">当和标志位 O_CREAT (没有和该位一起使用，该标志位将没有任何含义)一起使用时，如果参数 name 指定的文件已经存在，会导致 open() 调用失败。用于防止创建文件时出现竞争。</td>
+</tr>
+
+<tr>
+<td align="center">O_LARGEFILE</td>
+<td align="left">文件偏移使用 63 位整数表示，可以支持大于 2GB 的文件。64 位操作系统打开文件时，默认使用该参数。</td>
+</tr>
+
+<tr>
+<td align="center">O_NOATIME+</td>
+<td align="left">在读文件时，不会更新该文件的最后访问时间，该标志位适用于备份、索引以及类似的读取系统上所有文件的程序，它可以避免为了更新每个文件的索引节点而导致的大量写操作。</td>
+</tr>
+
+<tr>
+<td align="center">O_NOCTTY</td>
+<td align="left">如果给定的参数 name 指向终端设备 (eg. /dev/tty)，它不会成为这个进程的控制终端，即使该进程当前没有控制终端。</td>
+</tr>
+
+<tr>
+<td align="center">O_NOFOLLOW</td>
+<td align="left">如果参数 name 指向一个符号链接，open() 会调用失败。</td>
+</tr>
+
+<tr>
+<td align="center">O_NONBLOCK</td>
+<td align="left">文件以非阻塞模式打开。不管是 open() 调用还是其他操作，都不会导致进程在 I/O 中阻塞 (sleep)。这种情况只适用于 FIFO。</td>
+</tr>
+
+<tr>
+<td align="center">O_SYNC</td>
+<td align="left">打开文件用于同步。在数据从物理上写到磁盘之前，写操作都不会完成。普通读操作已经是同步的，对读无效。</td>
+</tr>
+
+<tr>
+<td align="center">O_TRUNC</td>
+<td align="left">如果文件存在，且是普通文件，并且有写权限，该标志位会把文件长度截断为 0 ，对于 FIFO 或终端设备无效，对于其他文件类型，其行为是未定义的。</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="新建文件的所有者">新建文件的所有者</h3>
+
+<p>文件所有者的 uid 即为创建该文件的进程的有效 uid。</p>
+
+<p>新建文件的用户组分两种情况：
+1. 创建进程的有效 gid (System V 大多数 Linux 的选择)
+2. 新建文件的用户组会被设置成其父目录的 gid (BSD)</p>
+
+<h3 id="新建文件的权限">新建文件的权限</h3>
+
+<p>如果在调用 open() 时，使用 O_CREAT 参数，则需要 mode 参数 (提供了新建文件的权限) 。</p>
+
+<p>对于新建的文件，打开文件时不会检查权限，因此可以执行与权限相反的操作。比如以只读模式打开文件，却在打开后执行写操作。</p>
+
+<p>POSIX 引入 mode 参数</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">mode 参数</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">S_IRWXU</td>
+<td align="center">文件所有者拥有读、写和执行的权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IRUSR</td>
+<td align="center">文件所有者有读权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IWUSR</td>
+<td align="center">文件所有者有写权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IXUSR</td>
+<td align="center">文件所有者有执行权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IRWXG</td>
+<td align="center">组用户有读、写权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IRGRP</td>
+<td align="center">组用户有读权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IWGRP</td>
+<td align="center">组用户有写权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IXGRP</td>
+<td align="center">组用户有执行权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IRWXO</td>
+<td align="center">任何人都有读、写权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IROTH</td>
+<td align="center">任何人都有读权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IWOTH</td>
+<td align="center">任何人都有写权限</td>
+</tr>
+
+<tr>
+<td align="center">S_IXOTH</td>
+<td align="center">任何人都有执行权限</td>
+</tr>
+</tbody>
+</table>
+
+<p>最终写入磁盘的权限位是由 mode 参数和用户的文件创建 (mask)  执行按位与操作而得到的。</p>
+
+<p>umask 是进程级属性，由 login shell 设置，通常调用 umask() 来修改，支持用户修改新创建的文件和目录的权限。在系统调用 open() 中，umask 位要和参数 mode 取反。因此，umask 022 和 mode 参数 0666 取反后，结果是 0644。在设置权限时通常不需要考虑 umask —— umask 是为了支持用户限制程序对于新文件的权限设置。</p>
+
+<p>以下代码会对文件 file 执行写操作。</p>
+
+<p>如果文件不存在，假定 umask 值为 022，文件在创建时指定权限为 0644 (虽然参数 mode 值为 0664)。如果文件已存在，其长度会被截断为 0 。</p>
+
+<pre><code>int fd;
+
+fd = open(file,O_WRONLY | O_CREAT | O_TRUNC |
+ S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IROTH);
+if( fd == -1)
+/* error */
+</code></pre>
+
+<p>可以将那些复杂的英文参数改为数字，增加可读性</p>
+
+<pre><code>int fd;
+
+fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0664 );
+if( fd == -1)
+/* error */
+</code></pre>
+
+<h3 id="creat-函数">creat() 函数</h3>
+
+<p>O_WRONLY | O_CREAT | O_TRUNC 的组合经常被使用，因而专门有个系统调用提供这个功能：</p>
+
+<pre><code class="language-c">#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+
+int creat (const char *name, mode_t mode);
+</code></pre>
+
+<p>creat() 调用</p>
+
+<pre><code class="language-c">int fd;
+fd = creat(filename , 0664);
+if(fd == -1)
+/*error*/
+</code></pre>
+
+<p>在用户空间中实现：</p>
+
+<pre><code class="language-c">int creat(const char *name , int mode){
+return open(name, O_WRONLY | O_CREAT | O_TRUNC)
+}
+</code></pre>
+
+<h3 id="返回值和错误码">返回值和错误码</h3>
+
+<p>open() 和 creat() 在成功的时候都会返回文件描述符 (fd)。</p>
+
+<p>出错时，返回 -1，并且把 error 设置成相应的错误值。典型的处理方法是提示用户换个文件名或直接终止程序。</p>
+
+<h2 id="通过-read-读文件">通过 read() 读文件</h2>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%202%20%E7%AB%A0%E8%8A%82%20%E4%B8%8A/read.png" width="700" height="220">
+</center></p>
+
+<pre><code>#include&lt;unistd.h&gt;
+ssize_t read(int fd, void *buf, size_t len);
+</code></pre>
+
+<p>每次调用 read() 函数，会从 fd 指向的文件的当前偏移开始读取 len 字节到 buf 所指向的内存中。
+执行成功时，返回写入 buf 中的字节数。</p>
+
+<p>出错时，返回 -1，并设置 errno 值。</p>
+
+<p>fd 的文件位置指针会向前移动，移动的长度由读取到的字节数决定。如果 fd 所指向的对象不支持 seek 操作，则读操作总是从 “当前” 位置开始。</p>
+
+<pre><code>unsigned long word;
+ssize_t nr;
+
+/*read a couple bytes into 'word' from 'fd' */
+nr = read(fd, &amp;word,sizeof(unsigned long));
+if(nr == -1)
+/*error*/
+</code></pre>
+
+<p>存在两个问题：
+1. 可能还没有读取 len 字节，调用就返回了
+2. 可能产生某些可操作的错误，但这段代码没有检查和处理。</p>
+
+<h3 id="返回值">返回值</h3>
+
+<p>对于 read()，返回小于 len 的非零正整数是合法的。</p>
+
+<p>很多情况下会出现该现象：
+1. 可用的字节数小于 len
+2. 系统调用可能被信号打断
+3. 管道可能被破坏(如果 fd 指向的是管道)</p>
+
+<p>read() 返回值为 0 的情况，当到达文件末尾 (end-of-file, EOF) 时，read() 返回 0，在这种情况下，没有读取任何字节。EOF 并不表示出错 (因此返回值不是 -1), 它仅仅表示文件位置已经到达文件结尾，因此没有任何数据可读了。</p>
+
+<p>但是，如果调用时要读取 len 个字节，但是没有一个字节可读，调用会阻塞 (sleep), 直到有数据可读。这种阻塞模式和返回 EOF 不同。也就是说“没有数据可读” 和“到达数据结尾”是两个不同的概念。</p>
+
+<p>对于 EOF, 表示到达了文件结尾。对于阻塞模式，表示读操作在等待更多的数据。</p>
+
+<p>调用 read() 的可能结果：
+- 调用返回值 == len。 读取到的所有 len 个字节都被存在 buf 中，结果和预期一致。
+- 调用返回值 &lt; len，大于 0 。读取到的字节都被存储到 buf 中。 这种情况有很多原因，比如在读取过程中信号中断或在读取中出错，可读的数据大于 0 字节小于 len 字节，在读取 len 字节之前到达 EOF。再次执行read (分别更新了 buf 和 len 值) 会把剩余的字节读到缓冲区中或者给出错误信息。
+- 调用返回 0 ，表示 EOF, 没有跟他更多可读的数据。
+由于当前没有数据可用，调用阻塞。在非阻塞模式下，不会发生这种情况。
+- 调用返回 -1，并把 errno 设成 EINTR。表示在读取任何字节之前接受到信号。调用可以重新执行。
+- 调用返回 -1，并把 errno 设成 EAGAIN。表示当前没有数据可用，读操作会阻塞，请求应该稍后再重新执行。这种情况只在非阻塞模式下发生。
+- 调用返回 -1，并把 errno 设成非 EINTR 或 EAGAIN 的一个值。表示更严重的错误，重新执行读操作不会成功。</p>
+
+<h3 id="读入所有字节">读入所有字节</h3>
+
+<pre><code>ssize_t ret;
+
+while(len != 0 &amp;&amp;(ret = read( fd, buf, len)) != 0){
+    if(ret != -1){
+        if(errno == EINTR)
+            continue;
+        perror(&quot;read&quot;);
+        break;    
+    }
+    len -= ret;
+    buf += ret;
+}
+</code></pre>
+
+<p>这段代码处理了 5 中情况：</p>
+
+<p>循环从 fd 所指向的当前文件位置读入 len 个字节到 buf 中，一直读完所有 len 个字节或者 EOF 为止。如果读入的字节数大于 0 但小于 len，就从 len 中减去已读字节数，buf 增加相应的字节数，并且重新调用 read()。如果调用返回 -1，并且 errno 值为 EINTR, 会重新调用且不更新参数。如果调用返回 -1，并且 errno 设置成其他值，会调用 perror()，向标准错误打印一条描述，循环结束。</p>
+
+<h3 id="非阻塞读">非阻塞读</h3>
+
+<p>非阻塞 I/O - read() 调用在没有数据可读时，并不是阻塞在那里，而是调用立即返回，表示没有数据可读。</p>
+
+<p>如果文件描述符以非阻塞模式打开，并且没有数据可读，read() 调用会返回 -1，并设置 errno 为 EAGAIN，而不是阻塞模式。当以非阻塞模式读文件时，必须检查 EAGAIN，否则可能因为丢失数据导致严重错误。</p>
+
+<pre><code>char buf[BUFSIZE];
+ssize_t nr;
+
+start:
+    nr = read(fd, buf, BUFSIZE);
+    if(nr == -1){
+        if(errno == EINTR)
+            goto start;/*oh shush*/
+        if(errno == EAGAIN)
+        /*resubmit later*/
+        else
+        /*error*/    
+    }
+</code></pre>
+
+<h3 id="其他错误码">其他错误码</h3>
+
+<p>read() 调用失败后，可能的 errno 值包括：</p>
+
+<p><center></p>
+
+<table>
+<thead>
+<tr>
+<th align="center">errno 值</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">EBADF</td>
+<td align="center">给定的文件描述符非法或不是以可读模式打开</td>
+</tr>
+
+<tr>
+<td align="center">EFAULT</td>
+<td align="center">buf 指针不在调用进程的地址空间内</td>
+</tr>
+
+<tr>
+<td align="center">EINVAL</td>
+<td align="center">文件描述符所指向的对象不允许读</td>
+</tr>
+
+<tr>
+<td align="center">EIO</td>
+<td align="center">底层 I/O 错误</td>
+</tr>
+</tbody>
+</table>
+
+<p></center></p>
+
+<h3 id="read-调用的大小限制">read() 调用的大小限制</h3>
+
+<p>类型 size_t 和 ssize_t 是由 POSIX 确定的。</p>
+
+<p>类型 size_t 保存字节大小，类型 ssize_t 是有符号的 size_t (负值用于表示错误)。</p>
+
+<p>size_t 的最大值是 SIZE_MAX ， sszie_t 的最大值是 SSIZE_MAX 。如果 len 值大于 SSIZE_MAX，read() 调用的结果是未定义的。如果使用之前的读循环作为通用的读方式，可能需要给他增加以下代码：</p>
+
+<pre><code>if(len &gt; SSIZE_MAX){
+    len = SSIZE_MAX;
+}
+</code></pre>
+
+<p>调用 read() 时如果 len 参数为 0 ，会立即返回，且返回值为 0。</p>
+
+<h2 id="调用-write-写">调用 write() 写</h2>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%202%20%E7%AB%A0%E8%8A%82%20%E4%B8%8A/write.png" width="700" height="200">
+</center></p>
+
+<pre><code>#include&lt;unistd.h&gt;
+ssize_t write(int fd, const void *buf, size_t count);
+</code></pre>
+
+<p>write() 调用会从文件描述符 fd 指向的文件的当前位置开始，将 buf 中至多 count 个字节写到文件中。不支持 seek 的文件 (如字符设备) 总是从起始位置开始写。</p>
+
+<p>write() 执行成功，返回写入的字节数，并更新文件位置。</p>
+
+<p>出错时，返回 -1，并设置 errno 值。 调用 write() 会返回 0 ，但是这种返回没有任何意义，只是表示写入了 0 个字节。</p>
+
+<p>调用 write()</p>
+
+<pre><code class="language-c">const char * buf = &quot;My ship is solid&quot;;
+ssize_t nr;
+/*write the string in 'buf' to 'fd'*/
+nr = write(fd,buf,sizeof(buf));
+if(nr == -1)
+    /*error*/
+</code></pre>
+
+<p>上述这种写法不太正确。调用方还需要检查各种“部分写 (partial write)” 的场景：</p>
+
+<pre><code class="language-c">unsigned long word = 1720;
+size_t count;
+ssize_t nr;
+
+count = sizeof(word);
+nr = wirte(fd, &amp;word, count);
+if(nr == -1)
+    /*error,check error*/
+else if(nr != count )
+    /*possible error, but 'errno' not set*/    
+</code></pre>
+
+<h3 id="部分写-paartial-write">部分写 (Paartial Write)</h3>
+
+<p>write() 不太可能返回一个部分写的结果，而且，对于 write() 来说没有 EOF 情况。对于普通文件，除非发生错误，write() 操作会保证指向整个写请求。</p>
+
+<p>因此，对于普通文件，不需要指向循环写操作。</p>
+
+<p>然而对于其他的文件类型 &ndash; 例如 socket，需要循环来保证所有请求的字节。使用循环的另一个好处是使用 write() 可能会返回错误值。</p>
+
+<pre><code>ssize_t ret, nr;
+
+while(len != 0 &amp;&amp;  (ret = write(fd, buf , len)) != 0){
+    if(ret == -1){
+        if(errno == EINTR)
+            continue;
+        perror(&quot;write&quot;);
+        break;    
+    }
+    len -= ret;
+    buf += ret;
+}
+</code></pre>
+
+<h3 id="append-追加-模式">Append (追加) 模式</h3>
+
+<p>当以 Append 模式 (参数设置 O_APPEND) 打开文件描述符时，写操作不是从文件描述符的当前位置开始，而是从文件的末尾开始。不能同时想一个文件追加写。</p>
+
+<p>Append 模式可以理解成在每次写请求之前的文件位置更新操作是个原子操作。</p>
+
+<p>更新文件位置，指向新写入的数据末尾。这和下一次调用 write() 调用无关，因为更新文件位置是自动完成的，但如果由于某些原因下一次执行的是 read() 调用，那会有些影响。</p>
+
+<h3 id="非阻塞写">非阻塞写</h3>
+
+<p>以非阻塞模式 (参数设置 O_NONBLOCK) 打开文件。当发起写操作时，系统调用 write() 会返回 -1，并设置 errno 值为 EAGAIN。请求可以稍后重新发起，一般而言对于普通文件，不会出现这种情况。</p>
+
+<h3 id="其他错误码-1">其他错误码</h3>
+
+<p><center></p>
+
+<table>
+<thead>
+<tr>
+<th align="center">errno 值</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">EBADF</td>
+<td align="center">给定的文件描述符非法不是以写方式打开</td>
+</tr>
+
+<tr>
+<td align="center">EFAULT</td>
+<td align="center">buf 指针指向的位置不在进程的地址空间内</td>
+</tr>
+
+<tr>
+<td align="center">EFBIG</td>
+<td align="center">写操作将使文件大小超过进程的最大文件限制或内部设置的限制</td>
+</tr>
+
+<tr>
+<td align="center">EINVAL</td>
+<td align="center">给定文件描述符指向的对象不支持写操作</td>
+</tr>
+
+<tr>
+<td align="center">EIO</td>
+<td align="center">底层 I/O</td>
+</tr>
+
+<tr>
+<td align="center">ENOSPC</td>
+<td align="center">给定文件描述符所在的文件系统没有足够的空间</td>
+</tr>
+
+<tr>
+<td align="center">EPIPE</td>
+<td align="center">给定的文件描述符和管道或 socket关联，读端被关闭。进程还接受 SIGPIPE 信号。 SIGPIPE 信号的默认行为是终止信号接收进程</td>
+</tr>
+</tbody>
+</table>
+
+<p></center></p>
+
+<h3 id="write-大小限制">write() 大小限制</h3>
+
+<p>如果 count 比 SSIZE_MAX 还大，write() 调用的结果是未定义的。</p>
+
+<p>调用 write () 时，如果 count 值为零，会立即返回，且返回值为 0。</p>
+
+<h3 id="write-行为">write() 行为</h3>
+
+<p>当 write() 调用返回时，内核已经把数据从提供的缓冲区中拷贝到内核缓冲区中，但不保证数据已经写到目的地。</p>
+
+<p>当用户空间应用发起 write() 系统调用时，Linux 内核会进行几项检查，然后直接将数据拷贝之一缓冲区中。稍后，在后台，内核搜集所有这样的 “脏” 缓冲区 (存储的数据比磁盘上的数据新)，将它们排好序，并写入到磁盘上 (此过程称为<font color = red>回写 writeback</font>)。这使得 write() 调用马上被调用并立即返回。内核可以将写操作推迟到空闲阶段，并将很多写操作一起处理。</p>
+
+<p>延迟写的另一个问题是无法强制 “顺序写 (write ordering)”。</p>
+
+<p>延迟写最后一个问题是对某些 I/O 错误的提示信息不准确。</p>
+
+<p>对于这些潜在的问题，内核试图最小化延迟写带来的风险。为了保证数据按时写入，内核设置了 “<font color = red>最大缓存时效</font>” (maximum buffer age), 并在超出给定时效之前将所有<font color = red>脏缓存</font>的数据写入磁盘。用户可以通过 <font color = red>/proc/sus/vm/dirty_expire_centisecs</font> 来配置这个值。</p>
+
+<h2 id="同步-i-o">同步 I/O</h2>
+
+<h3 id="fsync-和-fdatasync">fsync() 和 fdatasync()</h3>
+
+<p>fsync() 保证数据写入磁盘。</p>
+
+<pre><code>#include&lt;unistd.h&gt;
+
+int fsync(int fd);
+</code></pre>
+
+<p>系统调用 fsync() 可以确保和文件描述符 fd 所指向的文件相关的所有脏数据都会回写到磁盘上。文件描述符 fd 必须以写方式打开。</p>
+
+<p>fsync() 会涉及到两个 I/O 操作：
+1. 回写修改的数据
+2. 更新索引节点的修改时间戳</p>
+
+<pre><code>#include&lt;unistd.h&gt;
+
+int fdatasync(int fd);
+</code></pre>
+
+<p>完成的事和 fsync() 一样，曲边在于它仅写入数据。不保证元数据同步到磁盘上。使用 fdatasync() 是提高性能的简单方式。</p>
+
+<p>用法：</p>
+
+<p>fsync()</p>
+
+<pre><code>int ret;
+
+ret = fsync(fd);
+if(ret == -1)
+/*error*/
+</code></pre>
+
+<p>fdatasync()</p>
+
+<pre><code>int ret;
+
+ret = fdatasync(fd);
+if(ret == -1)
+/*error*/
+</code></pre>
+
+<p>这两个函数都不保证任何已经更新的包含该文件的目录项会同步到磁盘上。</p>
+
+<p>这意味着如果文件链接刚更新，文件数据可能会成功写入磁盘，但没有更新到相关的目录中，导致文件不可用。</p>
+
+<p>为了保证对目录项的更新也都同步到磁盘上，必须对文件目录页调用 fsync() 进行同步。</p>
+
+<h4 id="返回值和错误码-1">返回值和错误码</h4>
+
+<p><center></p>
+
+<table>
+<thead>
+<tr>
+<th align="center">errno 值</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">EBADF</td>
+<td align="center">给定的文件描述符不是一个可以写入的合法描述符</td>
+</tr>
+
+<tr>
+<td align="center">EINVAL</td>
+<td align="center">给定的文件描述符对应的对象不支持同步</td>
+</tr>
+
+<tr>
+<td align="center">EIO</td>
+<td align="center">在同步时底层 I/O 出现错误</td>
+</tr>
+</tbody>
+</table>
+
+<p></center></p>
+
+<h3 id="sync">sync()</h3>
+
+<pre><code>#include &lt;unistd.h&gt;
+
+void sync(void);
+</code></pre>
+
+<p>sync() 系统调用用来对磁盘上所有缓冲区进行同步，效率不高，但还是广泛运用。</p>
+
+<p>该函数没得参数，也没得返回值。</p>
+
+<p>它总是返回成功，并确保所有的缓冲区 (包括数据和元数据) 都能够写入磁盘。</p>
+
+<p><font color = red>对于 Linux 而言，sync() 是等到所有缓冲区都写入了才返回，因此调用一次 sync() 就够了。</font></p>
+
+<h3 id="o-sync-标志位">O_SYNC 标志位</h3>
+
+<pre><code>int fd;
+
+fd = open(file,O_WRONLY | O_SYNC);
+if(fd == -1){
+    perror(&quot;open&quot;);
+    return -1;
+}
+</code></pre>
+
+<p>系统调用 open() 可以使用 O_SYNC 标志位，表示该文件的所有 I/O 操作都需要同步。</p>
+
+<p>读请求总是同步操作。</p>
+
+<p><font color = red>O_SYNC 标志位的功能可以理解成每次调用 write() 操作后，隐式执行 fsync()，然后才返回。</font>
+对于写操作，O_SYNC 对于用户时间和内核时间 (分别指用户空间和内核空间消耗的时间) 有些负面影响。此外，根据写入文件的大小，O_SYNC 可能会使进程消耗大量的时间在 I/O 等待时间，因而导致总耗时增加一两个量级。这种事件开销增长是非常可观的，所以<font color = red>同步 I/O </font> 一般实在无计可施情况下的<font color = red>最后选择</font>。</p>
+
+<p>一般情况下，需要确保数据写入磁盘的应用可以使用 fysnc() 或 fdatasync() 。</p>
+
+<h3 id="o-dsync-和-o-rsync">O_DSYNC 和 O_RSYNC</h3>
+
+<p>POSIX 为open() 定义了另外两个同步相关的标志：
+1. O_DSYNC - 指定每次写操作后，只同步普通数据，不同步元数据。
+2. O_RSYNC - 执行读请求和写请求之间的同步。该标志为必须和 O-SYNC 和 O_DSYNC 一起使用。(每次调用 read() 后，再调用 fdatasync()。)</p>
+
+<p>在 Linux 上，这些标志位的定义和 O_SYNC 一直，其行为完全相同。</p>
+
+<h2 id="直接-i-o">直接 I/O</h2>
+
+<p>在 open() 中使用 O_DIRECT 标志位会使得内核对 I/O 管理的影响最小化。</p>
+
+<p>如果提供 O_DIRECT 标志位，I/O 操作会忽略页缓存机制，直接对用户空间缓冲区和设备进行初始化。所有的 I/O 操作都是同步的，操作完成之前不会返回。</p>
+
+<p>使用直接 I/O 时，请求长度、缓冲区对其以及文件偏移都必须是底层设备扇区大小的整数倍。</p>
+
+<h2 id="关闭文件">关闭文件</h2>
+
+<p>当程序完成对某个文件的操作后，可以通过系统调用 close() 取消文件描述符到对应文件的映射。</p>
+
+<pre><code>#include&lt;unistd.h&gt;
+
+int close(int fd);
+</code></pre>
+
+<p>调用后，先前给定的文件描述符 fd 不再生效，内核可以随时重用它，当后续有 open() 调用或 creat() 调用时，重新把它作为返回值。</p>
+
+<p>成功时，close() 返回 0。</p>
+
+<p>出错时，close() 返回 -1，并设置相应的 errno 值。</p>
+
+<p>close() 用法</p>
+
+<pre><code>if(close(fd) == -1)
+    perror(&quot;close&quot;);
+</code></pre>
+
+<h2 id="用-lseek-查找">用 lseek() 查找</h2>
+
+<p>lseek() 跳跃式查找。</p>
+
+<p>lseek() 系统调用能够将文件描述符的位置设置成指定值。除了更新文件位置，没有其他的行为，也并不初始化任何 I/O。</p>
+
+<pre><code>#include&lt;sys/types.h&gt;
+#include&lt;unistd.h&gt;
+
+off_t lseek(int fd, off_t pos, int origin)
+</code></pre>
+
+<p>lseek() 调用的行为依赖于 origin 参数，该参数可以是以下任意值：</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">origin 值</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">SEEK_CUR</td>
+<td align="center">当前文件位置 fd 设置为当前值加上 pos，pos 可以为负值，0 或正值。如果 pos 值为 0，返回当前文件位置值</td>
+</tr>
+
+<tr>
+<td align="center">SEEK_END</td>
+<td align="center">当前文件位置 fd 设置为当前文件长度加上 pos，pos 可以为负值，0 或正值。 如果 pos 值为 0，就设置成文件末尾</td>
+</tr>
+
+<tr>
+<td align="center">SEEK_SET</td>
+<td align="center">当前文件位置 fd 设置 pos。 如果 pos 值为 0，就设置成文件开始</td>
+</tr>
+</tbody>
+</table>
+
+<p>调用成功，返回新的文件位置； 错误时返回 -1，并设置相应 errno 值。</p>
+
+<p>以下代码将 fd 的文件位置指针设置为 1825：</p>
+
+<pre><code>off_t ret;
+
+ret = lseek(fd, (off_t)1825, SEEK_SET);
+if(ret == (off_t)-1)
+/*error*/
+</code></pre>
+
+<h3 id="在文件末尾后查找">在文件末尾后查找</h3>
+
+<p>lseek() 支持在文件末尾之后进行查找。</p>
+
+<p>定位到 fd 指向文件末尾后的 1688 字节。</p>
+
+<pre><code>int ret;
+
+ret = lseek(fd, (off_t) 1688, SEEK_END);
+if(ret == (off_t) -1)
+/*error*/
+</code></pre>
+
+<p>查找到文件末尾之后没有什么意义——对该新文件位置的读请求会返回 EOF 。
+但是，如果在该位置有个写请求，在文件的旧长度和新长度之间的空间会用 0 来填充。</p>
+
+<p>这种 0 填充区间称为 “<font color = red>空洞 (hole)</font>” 。在 UNIX 系文件系统上，空洞不占用任何物理磁盘空间。这一位这文件系统上所有文件的大小加起来可以超过磁盘的物理大小。
+包含空洞的文件称为 “<font color = red>稀疏文件 (spare file)</font>”。稀疏文件可以节省很多空间，并提升性能，因为操作空洞不会产生任何物理 I/O。</p>
+
+<h3 id="错误码">错误码</h3>
+
+<p>lseek() 调用出错时， 返回 -1，并将 errno 设置成以下四个值之一：</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">errno 值</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">EBADF</td>
+<td align="center">给出的文件描述符没有指向任何打开的文件</td>
+</tr>
+
+<tr>
+<td align="center">EINVAL</td>
+<td align="center">origin 的值不是 SEEK_CUR, SEEK_SET 或 SEEK_END，或者文件位置是个负值。</td>
+</tr>
+
+<tr>
+<td align="center">EOVERFLOW</td>
+<td align="center">结果文件偏移不能通过 off_t 表示，只有 32 位架构上才会发生。</td>
+</tr>
+
+<tr>
+<td align="center">ESPIPE</td>
+<td align="center">给出的文件描述符关联到一个不能执行查找操作的对象上，例如，管道，FIFO 或 socket</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="限制">限制</h3>
+
+<p>最大文件位置是受限于 off_t 大小。</p>
+
+<p>大部分计算机体系结构定义该值为 C long long 类型。在 64 位机器上没有任何问题，但是在 32 位机器上，当执行查找操作时，会产生溢出 EOVERFLOW 的错误。</p>
+
+<h2 id="定位读写">定位读写</h2>
+
+<p>每次读写操作时，都把文件位置作为参数，在完成时，不会更新文件位置。</p>
+
+<p>read() 的变体是 pread()</p>
+
+<pre><code>#define _XOPEN_SOURCE 500
+#include &lt;unistd.h&gt;
+ssize_t pread(int fd, void *buf, size_t count, off_t pos);
+</code></pre>
+
+<p>该调用会从文件描述符 fd 的 pos 位置开始读取，共读取 count 个字节到 buf 中。</p>
+
+<p>write() 的变体是 pwrite()</p>
+
+<pre><code>#define _XOPEN_SOURCE 500
+#include &lt;unistd.h&gt;
+ssize_t pwrite(int fd, void *buf, size_t count, off_t pos);
+</code></pre>
+
+<p>该调用从文件描述符 fd 的 pos 位置开始，从 buf 中写 count 个字节到文件中。</p>
+
+<p>这两个调用和 read() 和 write() 调用的最主要区别在于它们完全忽略了当前文件位置；此外，当调用完成时，它们不会更新文件位置指针，换句话说，read() 和 write() 交替调用可能会破坏定位读写的结果。</p>
+
+<p>定位读写只适用于可查找的文件描述符，包括普通文件。</p>
+
+<p>pread() 和 pwrite() 调用语义相当于在 read() 和 write() 之前执行 lseek() 调用。</p>
+
+<p>但是仍然存在三个区别：
+1. pread() 和 pwrite() 调用更易于使用。
+2. pread() 和 pwrite() 调用在结束时不会修改文件位置指针。
+3. 最重要的一点是，pread() 和 pwrite() 调用避免了在使用 lseek() 时会出现的竞争。</p>
+
+<h4 id="错误码-1">错误码</h4>
+
+<p>pread() 和 pwrite() 调用成功时，分别返回读或写的字节数。</p>
+
+<p>如果 pread() 返回 0 ，表示 EOF；如果 pwrite() 返回 0，表示什么都没写。</p>
+
+<p>出错时，两个调用都返回 -1，并设置相应的 errno 值。</p>
+
+<h2 id="文件截短">文件截短</h2>
+
+<pre><code>#include&lt;unistd.h&gt;
+#include&lt;sys/types.h&gt;
+
+int ftruncate(int fd, off_t len);
+</code></pre>
+
+<p>和：</p>
+
+<pre><code>#include&lt;unistd.h&gt;
+#include&lt;sys/types.h&gt;
+
+itn truncate(const char *path, off_t len);
+</code></pre>
+
+<p>这两个系统调用都将给定文件截短为参数 len 指定的长度。</p>
+
+<p>ftruncate() 系统调用操作一个打开的并且可写的文件描述符 fd。</p>
+
+<p>truncate() 系统调用操作 path 指定的一个可写文件。</p>
+
+<p>二者成功时返回 0。 错误时返回 -1，并设置 errno 为相应值。</p>
+
+<p>这两个系统调用最常见的用途是将文件截短到比源文件长度小一点。成功返回时，文件长度变成 len。之前在 len 和旧长度之间的数据将被忽略，并不可读取。</p>
+
+<p>它们也可以将文件“截短”到比原长度更长，扩展出的字节将全部填充为 0 。</p>
+
+<p><font color = red>这两个操作都不会修改当前文件位置。</font></p>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%202%20%E7%AB%A0%E8%8A%82%20%E4%B8%8A/truncate1.png" width="700" height="100">
+</center></p>
+
+<p>同一路径下运行下面程序：</p>
+
+<pre><code>#include&lt;unistd.h&gt;
+#include&lt;sys/types.h&gt;
+int main(){
+    int ret;
+    
+    ret = truncate(&quot;./private.txt&quot;, 45);
+    if(ret == -1){
+        perror(&quot;truncate&quot;);
+        return -1;
+    }
+    return 0;
+}
+</code></pre>
+
+<p><center>
+<img src="https://raw.githubusercontent.com/Tingw0w/MarkdownImage/master/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/%5B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%5D%20%E7%AC%AC%202%20%E7%AB%A0%E8%8A%82%20%E4%B8%8A/truncate2.png" width="700" height="100">
+</center></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

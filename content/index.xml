@@ -5,10 +5,23 @@
     <link>https://tingw0w.github.io/content/</link>
     <description>Recent content in Contents on Tingw0w</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 05 Jul 2019 13:06:38 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jul 2019 13:07:11 +0800</lastBuildDate>
     
 	<atom:link href="https://tingw0w.github.io/content/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[读书笔记] Linux 第 2 章 文件 I/O 上</title>
+      <link>https://tingw0w.github.io/content/linux-2-1/</link>
+      <pubDate>Mon, 15 Jul 2019 13:07:11 +0800</pubDate>
+      
+      <guid>https://tingw0w.github.io/content/linux-2-1/</guid>
+      <description>文件I/O 在对文件进行读写操作之前，首先要打开文件。内核会为每个进程维护一个打开文件的列表，该列表称为文件表 (file table)。 文件表是由一些非负整数进行索引，这些非负整数称为文件描述符 (file descriptors, fds)。列表的每一项是一个打开文件的信息，包括指向该文件索引节点 (inode) 内存拷贝的指针以及关联的元数据，如文件位置指针和访问模式。用户空间和内核空间都使用文件描述符作物唯一 cookies : 打开文件会返回文件描述符，而后续操作 (读写等) 都把文件描述符作为基本参数。 每个进程至少包含三个文件描述符：0、1和 2，除非显式的关闭这些描述符。  文件描述符 0 表示变准输入 (sdtin)，1 表示标准输出 (stdout)，2 表示标准错误 (stdeer)。Linux C 标准库没有直接引用这些整数，而是提供了三个宏：STDIN_FILENO, STDOUT_FILENO 和 STDERR_FILENO。
+打开文件 最基本的文件访问方法时系统调用 read() 和 write()。
+但是，在访问文件之前，必须先通过 open() 或 creat() 打开文件。一旦完成文件读写，还应该调用系统调用 close() 关闭该文件。
+ 
+系统调用 open() #include &amp;lt;sys/types.h&amp;gt; #include&amp;lt;sys/stat.h&amp;gt; #include&amp;lt;fcntl.h&amp;gt; int open(const char *name, int flags); int open(const char *name, int flags,mode_t mode);  open() 调用成功，会返回文件描述符，指向路径名 name 所制定的文件。文件位置即文件的气势位置 (0)，文件打开方式是根据参数 flags 来确定的。</description>
+    </item>
     
     <item>
       <title>[读书笔记] Linux系统编程 第 1 章 入门基本概念</title>
